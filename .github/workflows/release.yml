@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build release artifacts
+      run: |
+        make clean
+        make
+        
+        # Create release tarball
+        tar -czf apep-${{ github.ref_name }}.tar.gz \
+          include/ src/ examples/ Makefile \
+          README.md LICENSE QUICKSTART.md CONTRIBUTING.md
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: apep-${{ github.ref_name }}.tar.gz
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-binaries:
+    needs: create-release
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: apep-linux-x64
+            exe_ext: ""
+          - os: macos-latest
+            artifact_name: apep-macos-x64
+            exe_ext: ""
+          - os: windows-latest
+            artifact_name: apep-windows-x64
+            exe_ext: ".exe"
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup MinGW (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        install: mingw-w64-x86_64-gcc make
+    
+    - name: Build
+      shell: bash
+      run: |
+        make clean
+        make
+    
+    - name: Package binaries
+      shell: bash
+      run: |
+        mkdir -p release
+        cp bin/*${{ matrix.exe_ext }} release/
+        cp libapep.a release/
+        cp -r include release/
+        tar -czf ${{ matrix.artifact_name }}.tar.gz release/
+    
+    - name: Upload binaries
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ matrix.artifact_name }}.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

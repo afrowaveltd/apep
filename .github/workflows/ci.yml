@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+    
+    - name: Build
+      run: make clean && make
+    
+    - name: Run tests
+      run: |
+        ./bin/apep_text_demo
+        ./bin/apep_hex_demo
+        ./bin/apep_log_demo
+        ./bin/apep_show_demo --plain
+        ./bin/apep_helpers_demo
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build
+      run: make clean && make
+    
+    - name: Run tests
+      run: |
+        ./bin/apep_text_demo
+        ./bin/apep_hex_demo
+        ./bin/apep_log_demo
+        ./bin/apep_show_demo --plain
+        ./bin/apep_helpers_demo
+
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          make
+    
+    - name: Build
+      run: make clean && make
+    
+    - name: Run tests
+      run: |
+        ./bin/apep_text_demo.exe
+        ./bin/apep_hex_demo.exe
+        ./bin/apep_log_demo.exe
+        ./bin/apep_show_demo.exe --plain
+        ./bin/apep_helpers_demo.exe
