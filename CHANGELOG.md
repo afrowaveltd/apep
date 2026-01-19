@@ -1,0 +1,51 @@
+# Changelog
+
+All notable changes to APEP will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Complete internationalization (i18n) system
+- Auto-detect system locale on Windows, Linux, macOS
+- English and Czech translations
+- Hash table-based string lookup for O(1) performance
+- Locale file format (.loc files)
+- Runtime locale switching
+- i18n demo programs
+
+### Documentation
+- Complete API reference (docs/API.md)
+- Internationalization guide (docs/I18N.md)
+- Capabilities detection guide (docs/CAPABILITIES.md)
+- Logger integration guide (docs/LOGGER_INTEGRATION.md)
+- Quick start guide (QUICKSTART.md)
+- Locale files documentation (locales/README.md)
+
+## [0.1.0] - Initial Release
+
+### Added
+- Rust-style text diagnostics with source context
+- Binary hexdump diagnostics
+- Six severity levels (trace, debug, info, warn, error, critical)
+- Auto-detection of TTY, colors, unicode, terminal width
+- Graceful degradation for minimal terminals
+- Helper functions for common error patterns
+- Zero external dependencies
+- Cross-platform support (Windows, Linux, macOS)
+- CMake and Makefile build systems
+- Comprehensive examples
+- CI/CD with GitHub Actions
+
+### Core Features
+- Text error rendering with caret/span highlighting
+- Hex dump with highlighted byte spans
+- Color and Unicode auto-detection
+- Configurable output options
+- Printf-style formatting
+- Notes, hints, and help messages
+
+[Unreleased]: https://github.com/afrowaveltd/apep/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/afrowaveltd/apep/releases/tag/v0.1.0

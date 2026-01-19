@@ -114,13 +114,6 @@ Host applications may override detection explicitly.
 ### Using Makefile
 
 ```sh
-make
-./bin/apep_show_demo --plain
-```
-
-### Using CMake
-
-```sh
 mkdir build && cd build
 cmake ..
 cmake --build .
@@ -215,6 +208,12 @@ See [LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for a complete guide on 
 - C11/GNU11 compatible
 - Windows, Linux, macOS
 - Minimal resource usage
+
+🌐 **Internationalization**
+- Auto-detect system locale
+- Multiple language support (English, Czech)
+- Easy translation system
+- UTF-8 support
 
 ---
 
