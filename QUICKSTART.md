@@ -2,11 +2,14 @@
 
 Get started with APEP in 5 minutes.
 
+![APEP Show Demo - Comprehensive](screenshots/apep_show_demo3.png)
+![APEP Helpers Demo](screenshots/apep_helpers_demo.png)
+
 ## Installation
 
 ### Clone and Build
 
-```bash
+```sh
 git clone https://github.com/afrowaveltd/apep.git
 cd apep
 make
@@ -14,7 +17,7 @@ make
 
 Or with CMake:
 
-```bash
+```sh
 mkdir build && cd build
 cmake ..
 cmake --build .
@@ -95,6 +98,32 @@ int main(void) {
 ```
 
 See [docs/API.md](docs/API.md) for complete API documentation.
+
+## Advanced Features
+
+### JSON Output
+
+Export diagnostics in JSON format for programmatic processing:
+
+```c
+apep_print_json_diagnostic(stdout, APEP_SEV_ERROR, 
+    "E001", "type mismatch", "test.c", 10, 5, 1,
+    NULL, 0);
+```
+
+### Hexdump Diagnostics
+
+![Hex Dump Demo](screenshots/apep_hex_demo.png)
+
+For binary data visualization with highlighted error spans.
+
+### Logger Integration
+
+![Logger Demo](screenshots/apep_logger_demo.png)
+
+Use APEP as a logging backend with structured output.
+
+See [docs/LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for more details.
 
 ## Localization
 

@@ -14,7 +14,7 @@ ifeq ($(OS),Windows_NT)
 	# rm -f equivalent for individual files
 	RM_F = del /Q
 	# Clean object files
-	CLEAN_OBJ = del /Q src\apep_caps.o src\apep_color.o src\apep_text.o src\apep_hex.o src\apep_util.o src\apep_helpers.o src\apep_i18n.o 2>NUL || exit 0
+	CLEAN_OBJ = del /Q src\*.o 2>NUL || exit 0
 	# Clean library
 	CLEAN_LIB = del /Q libapep.a 2>NUL || exit 0
 	# rm -rf equivalent for directories
@@ -50,7 +50,17 @@ SRC = \
 	src/apep_hex.c \
 	src/apep_util.c \
 	src/apep_helpers.c \
-	src/apep_i18n.c
+	src/apep_i18n.c \
+	src/apep_json.c \
+	src/apep_filter.c \
+	src/apep_buffer.c \
+	src/apep_scheme.c \
+	src/apep_stack.c \
+	src/apep_suggest.c \
+	src/apep_multispan.c \
+	src/apep_perf.c \
+	src/apep_progress.c \
+	src/apep_assert.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -62,6 +72,7 @@ DEMO_HELPERS = bin/apep_helpers_demo$(EXE)
 DEMO_LOGGER = bin/apep_logger_demo$(EXE)
 DEMO_I18N = bin/apep_i18n_demo$(EXE)
 DEMO_I18N_FULL = bin/apep_i18n_comprehensive_demo$(EXE)
+DEMO_NEW_FEATURES = bin/apep_new_features_demo$(EXE)
 
 all: $(LIB) examples
 
@@ -84,6 +95,7 @@ examples: $(LIB) | bin
 	$(CC) $(CFLAGS) -o $(DEMO_LOGGER) examples/logger_wrapper.c $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_I18N) examples/i18n_demo.c $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_I18N_FULL) examples/i18n_comprehensive_demo.c $(LIB) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(DEMO_NEW_FEATURES) examples/new_features_demo.c $(LIB) $(LDFLAGS)
 
 clean:
 	$(CLEAN_OBJ)

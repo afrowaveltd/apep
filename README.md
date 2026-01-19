@@ -111,6 +111,10 @@ Host applications may override detection explicitly.
 
 ## Quick Start
 
+![APEP Show Demo - Core Features](screenshots/apep_show_demo1.png)
+![APEP Show Demo - Advanced Features](screenshots/apep_show_demo2.png)
+![APEP Show Demo - New Features](screenshots/apep_show_demo3.png)
+
 ### Using Makefile
 
 ```sh
@@ -150,6 +154,7 @@ See [QUICKSTART.md](QUICKSTART.md) for code examples.
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Code examples and usage guide
 - **[docs/API.md](docs/API.md)** - Complete API reference
+- **[docs/ADVANCED.md](docs/ADVANCED.md)** - Advanced features guide (NEW!)
 - **[docs/I18N.md](docs/I18N.md)** - Internationalization and localization
 - **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)** - Feature overview
 - **[docs/LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md)** - Use APEP as logger backend
@@ -179,6 +184,8 @@ See [LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for a complete guide on 
 
 ## Features
 
+![Text Diagnostics](screenshots/apep_log_demo.png)
+
 ✨ **Beautiful Output**
 - Rust-style error messages
 - Colored output (auto-detected)
@@ -202,6 +209,18 @@ See [LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for a complete guide on 
 - Printf-style formatting
 - Global configuration
 - Zero boilerplate
+
+⚡ **Advanced Features** (NEW!)
+- JSON output for programmatic processing
+- Severity filtering
+- Diagnostic buffering and batching
+- Color schemes (default, dark, light, colorblind)
+- Stack trace tracking
+- Suggestions and diff output
+- Multi-span highlighting
+- Performance metrics
+- Progress reporting
+- Enhanced assertions
 
 🌍 **Portable**
 - Zero dependencies

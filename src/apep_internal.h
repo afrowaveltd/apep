@@ -29,4 +29,7 @@ typedef enum apep_color_role
 void apep_color_begin(FILE *out, const apep_caps_t *caps, apep_color_role_t role);
 void apep_color_end(FILE *out, const apep_caps_t *caps);
 
+/* Get color code for role based on current color scheme */
+const char *apep_get_color_for_role(apep_color_role_t role);
+
 #endif

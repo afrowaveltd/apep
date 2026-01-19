@@ -7,7 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Added - Major Feature Update 2026-01-19 🎉
+
+#### JSON Output
+- `apep_print_json_diagnostic()` - Export diagnostics in JSON format
+- Structured output for IDE/CI/CD integration
+- Full support for notes, locations, and severity
+
+#### Severity Filtering
+- `apep_set_min_severity()` - Control which diagnostics are shown
+- `apep_get_min_severity()` - Query current filter level
+- `apep_severity_passes_filter()` - Check if diagnostic passes filter
+
+#### Diagnostic Buffering
+- `apep_buffer_create/add/flush/clear/destroy()` - Buffer management
+- Optional sorting by file/line location
+- Batch processing of diagnostics
+
+#### Color Schemes
+- Multiple predefined schemes (default, dark, light, colorblind)
+- `apep_set_color_scheme()` - Choose scheme
+- `apep_set_custom_colors()` - Custom color palettes
+- Accessibility improvements
+
+#### Stack Trace
+- `APEP_TRACE_BEGIN()` / `APEP_TRACE_END()` - Stack tracking
+- `apep_stack_print()` - Display call stack
+- Better debugging context
+
+#### Suggestions & Diff
+- `apep_print_text_diagnostic_with_suggestion()` - Show fixes
+- "Did you mean?" style hints
+- Before/after code display
+
+#### Multi-Span Highlighting
+- `apep_print_text_diagnostic_multi()` - Multiple highlights
+- Labeled spans
+- Type mismatch visualization
+
+#### Performance Metrics
+- `apep_perf_start/end()` - Timing functions
+- Millisecond precision
+- `APEP_PERF()` macros
+
+#### Progress Reporting
+- `apep_progress_start/update/done()` - Progress bars
+- Animated for TTY, periodic for non-TTY
+- Long-running operation feedback
+
+#### Enhanced Assertions
+- `APEP_ASSERT()` / `APEP_ASSERT_FMT()` - Rich assertions
+- Automatic stack trace on failure
+- Formatted messages
+
+### Documentation
+- New `docs/ADVANCED.md` - All new features explained
+- Updated `screenshots/README.md` - Screenshot catalog
+- Enhanced main documentation with examples
+- New demo: `examples/new_features_demo.c`
+
+### Added (Previous)
 - Complete internationalization (i18n) system
 - Auto-detect system locale on Windows, Linux, macOS
 - English and Czech translations

@@ -1,5 +1,9 @@
 # APEP API Reference
 
+![APEP Core Features](../screenshots/apep_show_demo1.png)
+![APEP Advanced Features](../screenshots/apep_show_demo2.png)
+![APEP New Features](../screenshots/apep_show_demo3.png)
+
 Complete API documentation - version 0.1.0
 
 See full docs at: https://github.com/afrowaveltd/apep
@@ -7,6 +11,7 @@ See full docs at: https://github.com/afrowaveltd/apep
 ## Core Functions
 
 ### apep_print_message
+
 ```c
 void apep_print_message(const apep_options_t *opt, apep_level_t lvl, 
                         const char *tag, const char *message);
@@ -15,6 +20,7 @@ void apep_print_message(const apep_options_t *opt, apep_level_t lvl,
 Print simple log message. Use NULL for default options.
 
 ### apep_print_text_diagnostic
+
 ```c
 void apep_print_text_diagnostic(const apep_options_t *opt, apep_severity_t sev,
                                 const char *code, const char *message,
@@ -26,6 +32,7 @@ void apep_print_text_diagnostic(const apep_options_t *opt, apep_severity_t sev,
 Print Rust-style text diagnostic with source context.
 
 ### apep_print_hex_diagnostic
+
 ```c
 void apep_print_hex_diagnostic(const apep_options_t *opt, apep_severity_t sev,
                                const char *code, const char *message,
@@ -37,6 +44,8 @@ void apep_print_hex_diagnostic(const apep_options_t *opt, apep_severity_t sev,
 Print binary diagnostic with hexdump.
 
 ## Helper Functions
+
+![Helper Macros](../screenshots/apep_helpers_demo.png)
 
 See <apep/apep_helpers.h> for:
 - apep_error_file() - File operation errors

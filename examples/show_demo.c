@@ -1,6 +1,8 @@
 #include "../include/apep/apep.h"
+#include "../include/apep/apep_helpers.h"
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static int streq(const char *a, const char *b)
 {
@@ -210,15 +212,120 @@ int main(int argc, char **argv)
     }
 
     /* ================================================== */
+    print_separator("8. SUGGESTIONS - Show suggested fixes");
+
+    {
+        const char *src_text = "int x = \"hello\";";
+        apep_text_source_t src = apep_text_source_from_string("main.c", src_text);
+
+        apep_suggestion_t sug = {
+            .label = "did you mean?",
+            .code = "int x = 42;",
+            .loc = {1, 1},
+            .replacement_length = 16};
+
+        apep_loc_t loc = {1, 9};
+        apep_print_text_diagnostic_with_suggestion(
+            &opt, APEP_SEV_ERROR, "E0042", "type mismatch: expected int, got string",
+            &src, loc, 7, NULL, 0, &sug);
+    }
+
+    /* ================================================== */
+    print_separator("9. MULTI-SPAN - Highlight multiple locations");
+
+    {
+        const char *src_text = "int x = \"hello\";";
+        apep_text_source_t src = apep_text_source_from_string("main.c", src_text);
+
+        apep_text_span_t spans[] = {
+            {{1, 1}, 3, "int"},
+            {{1, 9}, 7, "expected int, got string"}};
+
+        apep_print_text_diagnostic_multi(
+            &opt, APEP_SEV_ERROR, "E0042", "type mismatch",
+            &src, spans, 2, NULL, 0);
+    }
+
+    /* ================================================== */
+    print_separator("10. JSON OUTPUT - Structured diagnostics");
+
+    {
+        apep_note_t notes[] = {
+            {"hint", "add semicolon at end of statement"},
+            {"help", "JavaScript syntax requires ';' or newline"}};
+
+        printf("Colored JSON output:\n");
+        apep_print_json_diagnostic(
+            stdout, APEP_SEV_ERROR,
+            "E0001", "unexpected token",
+            "app.js", 42, 15, 1,
+            notes, 2);
+    }
+
+    /* ================================================== */
+    print_separator("11. PERFORMANCE - Measure execution time");
+
+    {
+        printf("Timing a simulated operation...\n");
+        apep_perf_timer_t *timer = apep_perf_start("file_processing");
+
+        /* Simulate work */
+        for (volatile int i = 0; i < 5000000; i++)
+            ;
+
+        apep_perf_end(timer, &opt);
+    }
+
+    /* ================================================== */
+    print_separator("12. PROGRESS - Long-running operations");
+
+    {
+        apep_progress_t *prog = apep_progress_start(&opt, "Processing files", 50);
+
+        for (size_t i = 1; i <= 50; i++)
+        {
+            usleep(10000); /* 10ms delay */
+            apep_progress_update(prog, i);
+        }
+
+        apep_progress_done(prog);
+    }
+
+    /* ================================================== */
+    print_separator("13. COLOR SCHEMES - Different palettes");
+
+    {
+        const char *src_text = "(1+)";
+        apep_text_source_t src = apep_text_source_from_string("test.expr", src_text);
+        apep_loc_t loc = {1, 4};
+
+        printf("Scheme: COLORBLIND (accessible)\n");
+        apep_set_color_scheme(APEP_SCHEME_COLORBLIND);
+        apep_print_text_diagnostic(&opt, APEP_SEV_ERROR, "E001",
+                                   "syntax error", &src, loc, 1, NULL, 0);
+
+        printf("\nScheme: DEFAULT (classic)\n");
+        apep_set_color_scheme(APEP_SCHEME_DEFAULT);
+        apep_print_text_diagnostic(&opt, APEP_SEV_WARN, "W002",
+                                   "unused variable", &src, loc, 1, NULL, 0);
+    }
+
+    /* ================================================== */
     print_separator("DEMO COMPLETE");
 
-    printf("\nAPEP provides:\n");
-    printf("  - Beautiful error messages with context\n");
-    printf("  - Structured logging with severity levels\n");
-    printf("  - Hexdump diagnostics for binary data\n");
-    printf("  - Adaptive output (color, Unicode, terminal width)\n");
-    printf("  - Zero dependencies, portable C11 code\n");
+    printf("\n🎨 APEP v%d.%d.%d provides:\n",
+           APEP_VERSION_MAJOR, APEP_VERSION_MINOR, APEP_VERSION_PATCH);
+    printf("  ✓ Beautiful error messages with context\n");
+    printf("  ✓ Structured logging with severity levels\n");
+    printf("  ✓ Hexdump diagnostics for binary data\n");
+    printf("  ✓ JSON output for IDE/CI integration\n");
+    printf("  ✓ Suggestions and multi-span highlighting\n");
+    printf("  ✓ Performance metrics and progress bars\n");
+    printf("  ✓ Multiple color schemes (incl. colorblind)\n");
+    printf("  ✓ Adaptive output (color, Unicode, terminal width)\n");
+    printf("  ✓ Zero dependencies, portable C11 code\n");
     printf("\n");
+    printf("📚 See docs/ADVANCED.md for all features!\n\n");
 
     return 0;
 }
