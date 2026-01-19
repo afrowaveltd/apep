@@ -1,4 +1,5 @@
 #include "../include/apep/apep.h"
+#include "../include/apep/apep_i18n.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,13 +9,13 @@ const char *apep_severity_name(apep_severity_t sev)
     switch (sev)
     {
     case APEP_SEV_ERROR:
-        return "Error";
+        return _("Error");
     case APEP_SEV_WARN:
-        return "Warning";
+        return _("Warning");
     case APEP_SEV_NOTE:
-        return "Note";
+        return _("Note");
     default:
-        return "Note";
+        return _("Note");
     }
 }
 
@@ -113,18 +114,18 @@ const char *apep_level_name(apep_level_t lvl)
     switch (lvl)
     {
     case APEP_LVL_TRACE:
-        return "Trace";
+        return _("Trace");
     case APEP_LVL_DEBUG:
-        return "Debug";
+        return _("Debug");
     case APEP_LVL_INFO:
-        return "Information";
+        return _("Information");
     case APEP_LVL_WARN:
-        return "Warning";
+        return _("Warning");
     case APEP_LVL_ERROR:
-        return "Error";
+        return _("Error");
     case APEP_LVL_CRITICAL:
-        return "Critical";
+        return _("Critical");
     default:
-        return "Information";
+        return _("Information");
     }
 }

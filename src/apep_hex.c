@@ -1,4 +1,5 @@
 #include "../include/apep/apep.h"
+#include "../include/apep/apep_i18n.h"
 #include "apep_internal.h"
 
 #include <ctype.h>
@@ -8,7 +9,7 @@ static void apep_print_notes(FILE *out, const apep_note_t *notes, size_t notes_c
 {
     for (size_t i = 0; i < notes_count; i++)
     {
-        const char *k = (notes[i].kind && notes[i].kind[0]) ? notes[i].kind : "note";
+        const char *k = (notes[i].kind && notes[i].kind[0]) ? notes[i].kind : _("note");
         const char *m = notes[i].message ? notes[i].message : "";
         fprintf(out, "  = %s: %s\n", k, m);
     }
@@ -174,16 +175,20 @@ void apep_print_hex_diagnostic(
     fputc('\n', out);
 
     apep_color_begin(out, &caps, APEP_CR_DIM);
-    fprintf(out, "  %s %s:+0x%lx (span %lu bytes)\n",
-            arrow,
-            (blob_name && blob_name[0]) ? blob_name : "<blob>",
-            (unsigned long)span.offset,
-            (unsigned long)span.length);
+    {
+        char span_msg[128];
+        snprintf(span_msg, sizeof(span_msg), _("span %lu bytes"), (unsigned long)span.length);
+        fprintf(out, "  %s %s:+0x%lx (%s)\n",
+                arrow,
+                (blob_name && blob_name[0]) ? blob_name : _("<blob>"),
+                (unsigned long)span.offset,
+                span_msg);
+    }
     apep_color_end(out, &caps);
 
     if (!data || data_size == 0)
     {
-        fprintf(out, "  (no binary data available)\n");
+        fprintf(out, "  (%s)\n", _("no binary data available"));
         apep_print_notes(out, notes, notes_count);
         return;
     }
@@ -241,8 +246,12 @@ void apep_print_hex_diagnostic(
 
     int show_ascii = apep_should_show_ascii(caps.width);
 
-    fprintf(out, "  (binary size: %lu bytes, window: 0x%lx..0x%lx)\n",
-            (unsigned long)data_size, (unsigned long)win_start, (unsigned long)win_end);
+    {
+        char window_msg[256];
+        snprintf(window_msg, sizeof(window_msg), _("binary size: %lu bytes, window: 0x%lx..0x%lx"),
+                 (unsigned long)data_size, (unsigned long)win_start, (unsigned long)win_end);
+        fprintf(out, "  (%s)\n", window_msg);
+    }
 
     /* Print hexdump lines */
     for (size_t off = win_start; off < win_end; off += (size_t)bpl)

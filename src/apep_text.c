@@ -1,4 +1,5 @@
 #include "../include/apep/apep.h"
+#include "../include/apep/apep_i18n.h"
 #include "apep_internal.h"
 
 #include <string.h>
@@ -17,7 +18,7 @@ static void apep_print_notes(FILE *out, const apep_caps_t *caps, const apep_note
 {
     for (size_t i = 0; i < notes_count; i++)
     {
-        const char *k = (notes[i].kind && notes[i].kind[0]) ? notes[i].kind : "note";
+        const char *k = (notes[i].kind && notes[i].kind[0]) ? notes[i].kind : _("note");
         const char *m = notes[i].message ? notes[i].message : "";
 
         fputs("  = ", out);
@@ -128,7 +129,7 @@ void apep_print_text_diagnostic(
     fputc('\n', out);
 
     /* Location line */
-    const char *name = (src && src->name && src->name[0]) ? src->name : "<input>";
+    const char *name = (src && src->name && src->name[0]) ? src->name : _("<input>");
     int line = (loc.line <= 0) ? 1 : loc.line;
     int col = (loc.col <= 0) ? 1 : loc.col;
 

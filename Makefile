@@ -14,11 +14,13 @@ ifeq ($(OS),Windows_NT)
 	# rm -f equivalent for individual files
 	RM_F = del /Q
 	# Clean object files
-	CLEAN_OBJ = del /Q src\apep_caps.o src\apep_color.o src\apep_text.o src\apep_hex.o src\apep_util.o src\apep_helpers.o 2>NUL || exit 0
+	CLEAN_OBJ = del /Q src\apep_caps.o src\apep_color.o src\apep_text.o src\apep_hex.o src\apep_util.o src\apep_helpers.o src\apep_i18n.o 2>NUL || exit 0
 	# Clean library
 	CLEAN_LIB = del /Q libapep.a 2>NUL || exit 0
 	# rm -rf equivalent for directories
 	RMDIR_RF = if exist bin rmdir /S /Q bin
+	# Windows libraries
+	LDFLAGS := -lkernel32
 else
 	EXE :=
 	MKDIR_BIN = mkdir -p bin
@@ -47,7 +49,8 @@ SRC = \
 	src/apep_text.c \
 	src/apep_hex.c \
 	src/apep_util.c \
-	src/apep_helpers.c
+	src/apep_helpers.c \
+	src/apep_i18n.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -57,6 +60,8 @@ DEMO_LOG = bin/apep_log_demo$(EXE)
 DEMO_SHOW = bin/apep_show_demo$(EXE)
 DEMO_HELPERS = bin/apep_helpers_demo$(EXE)
 DEMO_LOGGER = bin/apep_logger_demo$(EXE)
+DEMO_I18N = bin/apep_i18n_demo$(EXE)
+DEMO_I18N_FULL = bin/apep_i18n_comprehensive_demo$(EXE)
 
 all: $(LIB) examples
 
@@ -77,6 +82,8 @@ examples: $(LIB) | bin
 	$(CC) $(CFLAGS) -o $(DEMO_SHOW) examples/show_demo.c $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_HELPERS) examples/helpers_demo.c $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_LOGGER) examples/logger_wrapper.c $(LIB) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(DEMO_I18N) examples/i18n_demo.c $(LIB) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(DEMO_I18N_FULL) examples/i18n_comprehensive_demo.c $(LIB) $(LDFLAGS)
 
 clean:
 	$(CLEAN_OBJ)

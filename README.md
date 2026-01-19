@@ -113,14 +113,14 @@ Host applications may override detection explicitly.
 
 ### Using Makefile
 
-```bash
+```sh
 make
 ./bin/apep_show_demo --plain
 ```
 
 ### Using CMake
 
-```bash
+```sh
 mkdir build && cd build
 cmake ..
 cmake --build .
@@ -130,6 +130,7 @@ cmake --build .
 ### Integration
 
 **With make:**
+
 ```makefile
 # In your project Makefile
 APEP_DIR = path/to/apep
@@ -142,6 +143,7 @@ $(APEP_DIR)/libapep.a:
 ```
 
 **With CMake:**
+
 ```cmake
 add_subdirectory(apep)
 target_link_libraries(your_app PRIVATE apep)
@@ -155,6 +157,7 @@ See [QUICKSTART.md](QUICKSTART.md) for code examples.
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Code examples and usage guide
 - **[docs/API.md](docs/API.md)** - Complete API reference
+- **[docs/I18N.md](docs/I18N.md)** - Internationalization and localization
 - **[docs/CAPABILITIES.md](docs/CAPABILITIES.md)** - Feature overview
 - **[docs/LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md)** - Use APEP as logger backend
 - **[COMPARISON.md](COMPARISON.md)** - APEP vs alternatives (printf, Log.c, Spdlog, etc.)

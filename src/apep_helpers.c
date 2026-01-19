@@ -1,4 +1,5 @@
 #include "../include/apep/apep_helpers.h"
+#include "../include/apep/apep_i18n.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -49,17 +50,17 @@ void apep_error_simple(
     FILE *out = o->out ? o->out : stderr;
 
     /* Print error header */
-    fprintf(out, "error");
+    fprintf(out, "%s", _("error"));
     if (code && code[0])
     {
         fprintf(out, "[%s]", code);
     }
-    fprintf(out, ": %s\n", message ? message : "unknown error");
+    fprintf(out, ": %s\n", message ? message : _("unknown error"));
 
     /* Print hint if provided */
     if (hint && hint[0])
     {
-        fprintf(out, "  = hint: %s\n", hint);
+        fprintf(out, "  = %s: %s\n", _("hint"), hint);
     }
 }
 
@@ -72,11 +73,11 @@ void apep_error_file(
     const apep_options_t *o = opt ? opt : apep_get_global_options();
     char msg[512];
 
-    const char *fname = filename ? filename : "<unknown>";
-    const char *op = operation ? operation : "access";
-    const char *rsn = reason ? reason : "unknown error";
+    const char *fname = filename ? filename : _("<unknown>");
+    const char *op = operation ? operation : _("access");
+    const char *rsn = reason ? reason : _("unknown error");
 
-    snprintf(msg, sizeof(msg), "failed to %s file '%s': %s", op, fname, rsn);
+    snprintf(msg, sizeof(msg), _("failed to %s file '%s': %s"), op, fname, rsn);
 
     apep_error_simple(o, "E_FILE", msg, NULL);
 }
@@ -90,10 +91,10 @@ void apep_error_assert(
     const apep_options_t *o = opt ? opt : apep_get_global_options();
     char msg[512];
 
-    snprintf(msg, sizeof(msg), "assertion failed: %s", expr ? expr : "");
+    snprintf(msg, sizeof(msg), _("assertion failed: %s"), expr ? expr : "");
 
     char hint[256];
-    snprintf(hint, sizeof(hint), "at %s:%d", file ? file : "<unknown>", line);
+    snprintf(hint, sizeof(hint), _("at %s:%d"), file ? file : _("<unknown>"), line);
 
     apep_error_simple(o, "E_ASSERT", msg, hint);
 }
@@ -108,7 +109,7 @@ void apep_error_unknown_identifier(
     const apep_options_t *o = opt ? opt : apep_get_global_options();
 
     char msg[256];
-    snprintf(msg, sizeof(msg), "unknown identifier '%s'", unknown ? unknown : "");
+    snprintf(msg, sizeof(msg), _("unknown identifier '%s'"), unknown ? unknown : "");
 
     apep_note_t note;
     const apep_note_t *notes = NULL;
@@ -117,9 +118,9 @@ void apep_error_unknown_identifier(
     if (suggestion && suggestion[0])
     {
         char hint_msg[256];
-        snprintf(hint_msg, sizeof(hint_msg), "did you mean '%s'?", suggestion);
+        snprintf(hint_msg, sizeof(hint_msg), _("did you mean '%s'?"), suggestion);
 
-        note.kind = "hint";
+        note.kind = _("hint");
         note.message = hint_msg;
         notes = &note;
         note_count = 1;

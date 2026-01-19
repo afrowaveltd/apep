@@ -14,6 +14,7 @@ set(APEP_SOURCES
     src/apep_hex.c
     src/apep_util.c
     src/apep_helpers.c
+    src/apep_i18n.c
 )
 
 # Create static library
@@ -48,6 +49,7 @@ if(APEP_BUILD_EXAMPLES)
         log_demo
         show_demo
         helpers_demo
+        i18n_demo
     )
 
     foreach(example ${EXAMPLES})
@@ -70,6 +72,12 @@ install(TARGETS apep
 install(DIRECTORY include/apep
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h"
+)
+
+# Install locales directory
+install(DIRECTORY locales
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/apep
+    FILES_MATCHING PATTERN "*.loc"
 )
 
 # Export targets
