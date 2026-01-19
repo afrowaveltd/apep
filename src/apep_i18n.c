@@ -204,7 +204,8 @@ static int i18n_load_locale_file(const char *filepath)
     while (fgets(line, sizeof(line), f))
     {
         line_num++;
-        if (i18n_parse_line(line) < 0)
+        int result = i18n_parse_line(line);
+        if (result < 0)
         {
             fprintf(stderr, "Warning: invalid format in %s at line %d\n", filepath, line_num);
         }

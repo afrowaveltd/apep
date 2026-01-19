@@ -3,6 +3,29 @@
 #include "../include/apep/apep_i18n.h"
 #include <stdio.h>
 
+/* Find locales directory relative to where we are */
+static const char *find_locales_dir(void)
+{
+    /* Try current directory first */
+    FILE *test = fopen("locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "locales";
+    }
+
+    /* Try parent directory (when running from bin/) */
+    test = fopen("../locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "../locales";
+    }
+
+    /* Fallback to current directory anyway */
+    return "locales";
+}
+
 void print_separator(void)
 {
     printf("\n");
@@ -49,7 +72,7 @@ void demo_helper_functions(apep_options_t *opt, const char *locale_name)
     printf("\n");
 
     // File error
-    apep_error_file(opt, "config.txt", _("read"), _("file not found"));
+    apep_error_file(opt, "config.txt", "read", "file not found");
 
     printf("\n");
 
@@ -90,6 +113,9 @@ int main(void)
     printf("║           APEP Localization Comprehensive Demo               ║\n");
     printf("╚═══════════════════════════════════════════════════════════════╝\n");
 
+    // Find locales directory
+    const char *locales_dir = find_locales_dir();
+
     // Detect system locale
     const char *sys_locale = apep_i18n_detect_system_locale();
     printf("\nDetected system locale: %s\n", sys_locale);
@@ -101,7 +127,7 @@ int main(void)
     printf("│                     ENGLISH LOCALE (en)                       │\n");
     printf("└───────────────────────────────────────────────────────────────┘\n\n");
 
-    apep_i18n_init("en", "locales");
+    apep_i18n_init("en", locales_dir);
     printf("Active locale: %s\n\n", apep_i18n_get_locale());
 
     demo_severity_levels("English");

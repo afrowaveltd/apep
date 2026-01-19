@@ -2,10 +2,33 @@
 #include "../include/apep/apep_helpers.h"
 #include "../include/apep/apep_i18n.h"
 
+/* Find locales directory relative to where we are */
+static const char *find_locales_dir(void)
+{
+    /* Try current directory first */
+    FILE *test = fopen("locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "locales";
+    }
+
+    /* Try parent directory (when running from bin/) */
+    test = fopen("../locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "../locales";
+    }
+
+    /* Fallback to current directory anyway */
+    return "locales";
+}
+
 int main(void)
 {
     /* Initialize localization with detected system locale */
-    apep_i18n_init(NULL, "locales");
+    apep_i18n_init(NULL, find_locales_dir());
 
     printf("Current locale: %s\n\n", apep_i18n_get_locale());
 

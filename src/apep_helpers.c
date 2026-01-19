@@ -74,10 +74,13 @@ void apep_error_file(
     char msg[512];
 
     const char *fname = filename ? filename : _("<unknown>");
-    const char *op = operation ? operation : _("access");
-    const char *rsn = reason ? reason : _("unknown error");
+    /* Note: operation should be passed as English key, will be localized here */
+    const char *op_localized = operation ? _(operation) : _("access");
+    const char *rsn_localized = reason ? _(reason) : _("unknown error");
 
-    snprintf(msg, sizeof(msg), _("failed to %s file '%s': %s"), op, fname, rsn);
+    /* Build message: "operation error: filename: reason" */
+    snprintf(msg, sizeof(msg), "%s %s '%s': %s",
+             op_localized, _("error"), fname, rsn_localized);
 
     apep_error_simple(o, "E_FILE", msg, NULL);
 }
