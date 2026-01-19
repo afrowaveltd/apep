@@ -8,13 +8,13 @@ const char *apep_severity_name(apep_severity_t sev)
     switch (sev)
     {
     case APEP_SEV_ERROR:
-        return "error";
+        return "Error";
     case APEP_SEV_WARN:
-        return "warning";
+        return "Warning";
     case APEP_SEV_NOTE:
-        return "note";
+        return "Note";
     default:
-        return "note";
+        return "Note";
     }
 }
 
@@ -113,18 +113,18 @@ const char *apep_level_name(apep_level_t lvl)
     switch (lvl)
     {
     case APEP_LVL_TRACE:
-        return "trace";
+        return "Trace";
     case APEP_LVL_DEBUG:
-        return "debug";
+        return "Debug";
     case APEP_LVL_INFO:
-        return "info";
+        return "Information";
     case APEP_LVL_WARN:
-        return "warn";
+        return "Warning";
     case APEP_LVL_ERROR:
-        return "error";
+        return "Error";
     case APEP_LVL_CRITICAL:
-        return "critical";
+        return "Critical";
     default:
-        return "info";
+        return "Information";
     }
 }
