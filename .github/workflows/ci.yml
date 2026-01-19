@@ -25,6 +25,8 @@ jobs:
         ./bin/apep_log_demo
         ./bin/apep_show_demo --plain
         ./bin/apep_helpers_demo
+        ./bin/apep_i18n_demo
+        ./bin/apep_i18n_comprehensive_demo
 
   build-macos:
     runs-on: macos-latest
@@ -41,6 +43,8 @@ jobs:
         ./bin/apep_log_demo
         ./bin/apep_show_demo --plain
         ./bin/apep_helpers_demo
+        ./bin/apep_i18n_demo
+        ./bin/apep_i18n_comprehensive_demo
 
   build-windows:
     runs-on: windows-latest
@@ -68,3 +72,5 @@ jobs:
         ./bin/apep_log_demo.exe
         ./bin/apep_show_demo.exe --plain
         ./bin/apep_helpers_demo.exe
+        ./bin/apep_i18n_demo.exe
+        ./bin/apep_i18n_comprehensive_demo.exe

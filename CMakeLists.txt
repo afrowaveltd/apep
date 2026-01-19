@@ -50,12 +50,17 @@ if(APEP_BUILD_EXAMPLES)
         show_demo
         helpers_demo
         i18n_demo
+        i18n_comprehensive_demo
     )
 
     foreach(example ${EXAMPLES})
         add_executable(apep_${example} examples/${example}.c)
         target_link_libraries(apep_${example} PRIVATE apep)
     endforeach()
+    
+    # Copy locales directory to build directory for testing
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/locales
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # Installation
