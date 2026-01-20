@@ -1,0 +1,22 @@
+{
+    "title": "=== APEP Helpers Demo ===",
+    "sec1": "1. Quick logging macros:",
+    "app_started": "application started successfully",
+    "default_config": "using default configuration",
+    "connection_timeout": "connection timeout",
+    "sec2": "2. Formatted messages:",
+    "user_login": "user '%s' logged in from %s",
+    "cache_usage": "cache usage at %d%% capacity",
+    "sec3": "3. Simple errors:",
+    "invalid_config": "invalid configuration",
+    "check_config": "check config.ini file",
+    "expected_args": "expected %d arguments, got %d",
+    "sec4": "4. File errors:",
+    "open": "open",
+    "permission_denied": "permission denied",
+    "sec5": "5. Unknown identifier with suggestion:",
+    "sec6": "6. Assert failure:",
+    "sec7": "7. Debug logging (compiled out in release):",
+    "debug_msg": "this message only appears in debug builds",
+    "complete": "=== Demo Complete ==="
+}

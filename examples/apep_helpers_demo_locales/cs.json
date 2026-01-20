@@ -1,0 +1,22 @@
+{
+    "title": "=== APEP Pomocné funkce Demo ===",
+    "sec1": "1. Rychlá logovací makra:",
+    "app_started": "aplikace úspěšně spuštěna",
+    "default_config": "používám výchozí konfiguraci",
+    "connection_timeout": "vypršel časový limit připojení",
+    "sec2": "2. Formátované zprávy:",
+    "user_login": "uživatel '%s' se přihlásil z %s",
+    "cache_usage": "využití cache na %d%% kapacity",
+    "sec3": "3. Jednoduché chyby:",
+    "invalid_config": "neplatná konfigurace",
+    "check_config": "zkontrolujte soubor config.ini",
+    "expected_args": "očekáváno %d argumentů, získáno %d",
+    "sec4": "4. Chyby souborů:",
+    "open": "otevření",
+    "permission_denied": "přístup odepřen",
+    "sec5": "5. Neznámý identifikátor s návrhem:",
+    "sec6": "6. Selhání assertion:",
+    "sec7": "7. Debug logování (vynecháno v release):",
+    "debug_msg": "tato zpráva se zobrazuje jen v debug buildech",
+    "complete": "=== Demo Dokončeno ==="
+}

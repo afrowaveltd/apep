@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         }
     }
 
-    printf(_("apep_version"), 
+    printf(_("apep_version"),
            APEP_VERSION_MAJOR, APEP_VERSION_MINOR, APEP_VERSION_PATCH);
     printf("\n");
 
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
     }
 
     /* ================================================== */
-    print_separator("6. BINARY DATA ERROR - Corrupted file header");
+    print_separator("sep_6");
 
     {
         uint8_t header[32] = {
@@ -189,21 +189,21 @@ int main(int argc, char **argv)
 
         apep_note_t notes[2];
         notes[0].kind = "expected";
-        notes[0].message = "bytes 14-17 should be CRC-32 checksum";
+        notes[0].message = _("expected_crc");
         notes[1].kind = "found";
-        notes[1].message = "AA BB CC DD (invalid)";
+        notes[1].message = _("found_invalid");
 
         apep_span_t span = {14, 4};
 
         apep_print_hex_diagnostic(
             &opt, APEP_SEV_ERROR, "E_CHECKSUM",
-            "invalid CRC-32 in ZIP header",
+            _("err_invalid_crc"),
             "archive.zip", header, sizeof(header),
             span, notes, 2);
     }
 
     /* ================================================== */
-    print_separator("7. PROTOCOL ERROR - Network packet");
+    print_separator("sep_7");
 
     {
         uint8_t packet[48];
@@ -212,73 +212,73 @@ int main(int argc, char **argv)
 
         apep_note_t notes[1];
         notes[0].kind = "note";
-        notes[0].message = "protocol version mismatch detected at offset 0x08";
+        notes[0].message = _("note_proto_mismatch");
 
         apep_span_t span = {8, 2};
 
         apep_print_hex_diagnostic(
             &opt, APEP_SEV_WARN, "W_PROTO",
-            "unsupported protocol version 0x38",
+            _("warn_unsupported_proto"),
             "packet.raw", packet, sizeof(packet),
             span, notes, 1);
     }
 
     /* ================================================== */
-    print_separator("8. SUGGESTIONS - Show suggested fixes");
+    print_separator("sep_8");
 
     {
         const char *src_text = "int x = \"hello\";";
         apep_text_source_t src = apep_text_source_from_string("main.c", src_text);
 
         apep_suggestion_t sug = {
-            .label = "did you mean?",
+            .label = _("did_you_mean"),
             .code = "int x = 42;",
             .loc = {1, 1},
             .replacement_length = 16};
 
         apep_loc_t loc = {1, 9};
         apep_print_text_diagnostic_with_suggestion(
-            &opt, APEP_SEV_ERROR, "E0042", "type mismatch: expected int, got string",
+            &opt, APEP_SEV_ERROR, "E0042", _("err_type_mismatch"),
             &src, loc, 7, NULL, 0, &sug);
     }
 
     /* ================================================== */
-    print_separator("9. MULTI-SPAN - Highlight multiple locations");
+    print_separator("sep_9");
 
     {
         const char *src_text = "int x = \"hello\";";
         apep_text_source_t src = apep_text_source_from_string("main.c", src_text);
 
         apep_text_span_t spans[] = {
-            {{1, 1}, 3, "int"},
-            {{1, 9}, 7, "expected int, got string"}};
+            {{1, 1}, 3, _("int_type")},
+            {{1, 9}, 7, _("type_mismatch_detail")}};
 
         apep_print_text_diagnostic_multi(
-            &opt, APEP_SEV_ERROR, "E0042", "type mismatch",
+            &opt, APEP_SEV_ERROR, "E0042", _("err_type_mismatch_short"),
             &src, spans, 2, NULL, 0);
     }
 
     /* ================================================== */
-    print_separator("10. JSON OUTPUT - Structured diagnostics");
+    print_separator("sep_10");
 
     {
         apep_note_t notes[] = {
-            {"hint", "add semicolon at end of statement"},
-            {"help", "JavaScript syntax requires ';' or newline"}};
+            {"hint", _("hint_add_semicolon")},
+            {"help", _("help_js_syntax")}};
 
-        printf("Colored JSON output:\n");
+        printf("%s\n", _("colored_json_output"));
         apep_print_json_diagnostic(
             stdout, APEP_SEV_ERROR,
-            "E0001", "unexpected token",
+            "E0001", _("err_unexpected_token_json"),
             "app.js", 42, 15, 1,
             notes, 2);
     }
 
     /* ================================================== */
-    print_separator("11. PERFORMANCE - Measure execution time");
+    print_separator("sep_11");
 
     {
-        printf("Timing a simulated operation...\n");
+        printf("%s\n", _("timing_operation"));
         apep_perf_timer_t *timer = apep_perf_start("file_processing");
 
         /* Simulate work */
@@ -289,10 +289,10 @@ int main(int argc, char **argv)
     }
 
     /* ================================================== */
-    print_separator("12. PROGRESS - Long-running operations");
+    print_separator("sep_12");
 
     {
-        apep_progress_t *prog = apep_progress_start(&opt, "Processing files", 50);
+        apep_progress_t *prog = apep_progress_start(&opt, _("processing_files"), 50);
 
         for (size_t i = 1; i <= 50; i++)
         {
@@ -308,40 +308,42 @@ int main(int argc, char **argv)
     }
 
     /* ================================================== */
-    print_separator("13. COLOR SCHEMES - Different palettes");
+    print_separator("sep_13");
 
     {
         const char *src_text = "(1+)";
         apep_text_source_t src = apep_text_source_from_string("test.expr", src_text);
         apep_loc_t loc = {1, 4};
 
-        printf("Scheme: COLORBLIND (accessible)\n");
+        printf("%s\n", _("scheme_colorblind"));
         apep_set_color_scheme(APEP_SCHEME_COLORBLIND);
         apep_print_text_diagnostic(&opt, APEP_SEV_ERROR, "E001",
-                                   "syntax error", &src, loc, 1, NULL, 0);
+                                   _("syntax_error"), &src, loc, 1, NULL, 0);
 
-        printf("\nScheme: DEFAULT (classic)\n");
+        printf("\n%s\n", _("scheme_default"));
         apep_set_color_scheme(APEP_SCHEME_DEFAULT);
         apep_print_text_diagnostic(&opt, APEP_SEV_WARN, "W002",
-                                   "unused variable", &src, loc, 1, NULL, 0);
+                                   _("unused_variable"), &src, loc, 1, NULL, 0);
     }
 
     /* ================================================== */
-    print_separator("DEMO COMPLETE");
+    print_separator("sep_complete");
 
-    printf("\n🎨 APEP v%d.%d.%d provides:\n",
-           APEP_VERSION_MAJOR, APEP_VERSION_MINOR, APEP_VERSION_PATCH);
-    printf("  ✓ Beautiful error messages with context\n");
-    printf("  ✓ Structured logging with severity levels\n");
-    printf("  ✓ Hexdump diagnostics for binary data\n");
-    printf("  ✓ JSON output for IDE/CI integration\n");
-    printf("  ✓ Suggestions and multi-span highlighting\n");
-    printf("  ✓ Performance metrics and progress bars\n");
-    printf("  ✓ Multiple color schemes (incl. colorblind)\n");
-    printf("  ✓ Adaptive output (color, Unicode, terminal width)\n");
-    printf("  ✓ Zero dependencies, portable C11 code\n");
     printf("\n");
-    printf("📚 See docs/ADVANCED.md for all features!\n\n");
+    printf(_("apep_provides"),
+           APEP_VERSION_MAJOR, APEP_VERSION_MINOR, APEP_VERSION_PATCH);
+    printf("\n");
+    printf("%s\n", _("feature_1"));
+    printf("%s\n", _("feature_2"));
+    printf("%s\n", _("feature_3"));
+    printf("%s\n", _("feature_4"));
+    printf("%s\n", _("feature_5"));
+    printf("%s\n", _("feature_6"));
+    printf("%s\n", _("feature_7"));
+    printf("%s\n", _("feature_8"));
+    printf("%s\n", _("feature_9"));
+    printf("\n");
 
+    apep_i18n_cleanup();
     return 0;
 }

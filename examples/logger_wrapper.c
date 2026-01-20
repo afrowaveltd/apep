@@ -5,6 +5,8 @@
  */
 
 #include <apep/apep_helpers.h>
+#include <apep/apep_i18n.h>
+#include "common_i18n.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -229,9 +231,11 @@ void logger_configure_from_env(logger_t *log)
 // Demo Application
 // ============================================================================
 
-int main(void)
+int main(int argc, char **argv)
 {
-    printf("=== Logger Wrapper Demo ===\n\n");
+    demo_i18n_init(argc, argv, "apep_logger_demo");
+
+    printf("%s\n\n", _("title"));
 
     // Create logger instances for different components
     logger_t *app_log = logger_create("APP", LOG_INFO);
@@ -241,26 +245,26 @@ int main(void)
     // Configure from environment variables
     logger_configure_from_env(app_log);
 
-    printf("1. Basic Logging\n");
-    printf("----------------\n");
-    LOG_INFO_FMT(app_log, "Application starting...");
-    LOG_DEBUG_FMT(net_log, "Initializing network stack");
-    LOG_INFO_FMT(net_log, "Listening on port %d", 8080);
-    LOG_WARN_FMT(db_log, "Connection pool size low: %d/%d", 2, 10);
-    LOG_ERROR_FMT(app_log, "Failed to load plugin: %s", "analytics.so");
-    LOG_FATAL_FMT(app_log, "Out of memory!");
+    printf("%s\n", _("sec1"));
+    printf("%s\n", _("sec1_sep"));
+    LOG_INFO_FMT(app_log, _("app_starting"));
+    LOG_DEBUG_FMT(net_log, _("init_network"));
+    LOG_INFO_FMT(net_log, _("listening_port"), 8080);
+    LOG_WARN_FMT(db_log, _("pool_size_low"), 2, 10);
+    LOG_ERROR_FMT(app_log, _("failed_plugin"), "analytics.so");
+    LOG_FATAL_FMT(app_log, _("out_of_memory"));
     printf("\n");
 
-    printf("2. Structured Logging\n");
-    printf("---------------------\n");
-    LOG_INFO_FMT(app_log, "User logged in: user=%s, ip=%s, method=%s",
+    printf("%s\n", _("sec2"));
+    printf("%s\n", _("sec2_sep"));
+    LOG_INFO_FMT(app_log, _("user_logged_in"),
                  "alice", "192.168.1.100", "password");
-    LOG_WARN_FMT(net_log, "Slow request: path=%s, duration=%dms, threshold=%dms",
+    LOG_WARN_FMT(net_log, _("slow_request"),
                  "/api/users", 1500, 1000);
     printf("\n");
 
-    printf("3. Source Code Diagnostics\n");
-    printf("--------------------------\n");
+    printf("%s\n", _("sec3"));
+    printf("%s\n", _("sec3_sep"));
     // Create a temporary source file for demo
     FILE *tmp = fopen("temp_error.txt", "w");
     if (tmp)
@@ -273,45 +277,45 @@ int main(void)
 
         logger_error_source(app_log, "temp_error.txt", "E_TYPE",
                             3, 11, 9,
-                            "expected number, got string");
+                            _("expected_number"));
         remove("temp_error.txt");
     }
     printf("\n");
 
-    printf("4. Binary Data Logging\n");
-    printf("----------------------\n");
+    printf("%s\n", _("sec4"));
+    printf("%s\n", _("sec4_sep"));
     uint8_t packet[] = {
         0x47, 0x45, 0x54, 0x20, // GET
         0x2F, 0x61, 0x70, 0x69, // /api
         0x2F, 0x75, 0x73, 0x65, // /use
         0x72, 0x73, 0x00, 0x00  // rs..
     };
-    logger_hex(net_log, LOG_INFO, "HTTP Request", packet, sizeof(packet), 0, 4);
+    logger_hex(net_log, LOG_INFO, _("http_request"), packet, sizeof(packet), 0, 4);
     printf("\n");
 
-    printf("5. Performance Test\n");
-    printf("-------------------\n");
-    LOG_INFO_FMT(app_log, "Starting performance test with %d iterations", 10000);
+    printf("%s\n", _("sec5"));
+    printf("%s\n", _("sec5_sep"));
+    LOG_INFO_FMT(app_log, _("perf_start"), 10000);
 
     // This would be too verbose, so we disable it
     logger_set_level(app_log, LOG_WARN);
     for (int i = 0; i < 10; i++)
     {
-        LOG_DEBUG_FMT(app_log, "Iteration %d", i); // Won't print
+        LOG_DEBUG_FMT(app_log, _("iteration"), i); // Won't print
     }
     logger_set_level(app_log, LOG_INFO);
 
-    LOG_INFO_FMT(app_log, "Performance test completed");
+    LOG_INFO_FMT(app_log, _("perf_complete"));
     printf("\n");
 
-    printf("6. Multi-Component Logging\n");
-    printf("--------------------------\n");
-    LOG_INFO_FMT(app_log, "Processing request #1234");
-    LOG_DEBUG_FMT(net_log, "  ├─ Receiving data...");
-    LOG_DEBUG_FMT(db_log, "  ├─ Querying database...");
-    LOG_DEBUG_FMT(db_log, "  │  └─ Query: SELECT * FROM users WHERE id=?");
-    LOG_DEBUG_FMT(app_log, "  ├─ Processing results...");
-    LOG_INFO_FMT(app_log, "  └─ Request completed in 45ms");
+    printf("%s\n", _("sec6"));
+    printf("%s\n", _("sec6_sep"));
+    LOG_INFO_FMT(app_log, _("processing_req"));
+    LOG_DEBUG_FMT(net_log, _("receiving_data"));
+    LOG_DEBUG_FMT(db_log, _("querying_db"));
+    LOG_DEBUG_FMT(db_log, _("db_query"));
+    LOG_DEBUG_FMT(app_log, _("processing_results"));
+    LOG_INFO_FMT(app_log, _("req_completed"));
     printf("\n");
 
     // Cleanup
@@ -319,6 +323,8 @@ int main(void)
     logger_free(net_log);
     logger_free(db_log);
 
-    printf("=== Demo Complete ===\n");
+    printf("%s\n", _("complete"));
+
+    apep_i18n_cleanup();
     return 0;
 }
