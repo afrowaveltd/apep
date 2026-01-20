@@ -55,6 +55,22 @@ Typical use cases:
 * protocol parsing
 * binary format validation
 
+### 3. Exception handling (.NET/Java-style)
+
+* Exception types and messages
+* Stack trace capture (platform-specific)
+* Exception chaining (inner exceptions/causes)
+* Source location tracking (file, line)
+* Error codes
+* Formatted output with APEP styling
+
+Typical use cases:
+
+* C applications needing structured exception handling
+* Error propagation across call stacks
+* Debugging complex failure scenarios
+* Integration with logging systems
+
 Binary data is **never printed raw**. Only text representations are used.
 
 ---
@@ -211,6 +227,7 @@ See [LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for a complete guide on 
 - Zero boilerplate
 
 ⚡ **Advanced Features** (NEW!)
+- **Exception handling** (.NET/Java-style with stack traces and chaining)
 - JSON output for programmatic processing
 - Severity filtering
 - Diagnostic buffering and batching
@@ -233,6 +250,50 @@ See [LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md) for a complete guide on 
 - Multiple language support (English, Czech)
 - Easy translation system
 - UTF-8 support
+
+---
+
+## Exception Handling Example
+
+```c
+#include <apep/apep_exception.h>
+
+// Simple exception with macro
+apep_options_t opt = {0};
+apep_options_default(&opt);
+
+APEP_EXCEPTION(&opt, "NullPointerException", 
+              "Pointer 'data' was NULL at offset %d", 42);
+
+// Exception chaining
+apep_exception_t *inner = apep_exception_create(
+    "IOException", "Connection timeout after 30 seconds");
+apep_exception_set_source(inner, __FILE__, __LINE__);
+apep_exception_set_code(inner, 10060);
+
+apep_exception_t *outer = apep_exception_create(
+    "DatabaseException", "Failed to connect to database");
+apep_exception_set_source(outer, __FILE__, __LINE__);
+apep_exception_set_inner(outer, inner);
+apep_exception_capture_stack(outer);
+
+apep_exception_print_chain(&opt, outer, 0);
+apep_exception_destroy(outer);
+```
+
+Output:
+```
+DatabaseException: Failed to connect to database
+  at myapp.c:42
+  Stack Trace:
+
+Caused by:
+IOException: Connection timeout after 30 seconds
+  at myapp.c:35
+  Error Code: 10060
+```
+
+See [examples/exception_demo.c](examples/exception_demo.c) for comprehensive examples.
 
 ---
 

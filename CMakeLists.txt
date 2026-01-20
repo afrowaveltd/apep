@@ -15,6 +15,7 @@ set(APEP_SOURCES
     src/apep_util.c
     src/apep_helpers.c
     src/apep_i18n.c
+    src/apep_exception.c
 )
 
 # Create static library
@@ -51,6 +52,7 @@ if(APEP_BUILD_EXAMPLES)
         helpers_demo
         i18n_demo
         i18n_comprehensive_demo
+        exception_demo
     )
 
     foreach(example ${EXAMPLES})

@@ -116,83 +116,90 @@ extern "C"
         apep_loc_t end;   /* inclusive or end-exclusive is a policy; we will document v1 */
     } apep_range_t;
 
-typedef enum apep_severity
-{
-    APEP_SEV_ERROR = 0,
-    APEP_SEV_WARN = 1,
-    APEP_SEV_NOTE = 2
-} apep_severity_t;
+    typedef enum apep_severity
+    {
+        APEP_SEV_ERROR = 0,
+        APEP_SEV_WARN = 1,
+        APEP_SEV_NOTE = 2
+    } apep_severity_t;
 
-typedef struct apep_note
-{
-    const char *kind;    /* "note", "hint", "help", ... */
-    const char *message; /* single-line preferred */
-} apep_note_t;
+    typedef struct apep_note
+    {
+        const char *kind;    /* "note", "hint", "help", ... */
+        const char *message; /* single-line preferred */
+    } apep_note_t;
 
-/* ----------------------------
-Text source abstraction
----------------------------- */
+    /* ----------------------------
+    Text source abstraction
+    ---------------------------- */
 
-/* Callback returns:
-- 1 if line exists, and sets *line_ptr and *line_len
-- 0 if line does not exist
-The returned pointer must remain valid until the next callback call. */
+    /* Callback returns:
+    - 1 if line exists, and sets *line_ptr and *line_len
+    - 0 if line does not exist
+    The returned pointer must remain valid until the next callback call. */
 
-typedef int (*apep_line_getter_fn)(
-    void *user,
-    int line_no_1based,
-    const char **line_ptr,
-    size_t *line_len);
+    typedef int (*apep_line_getter_fn)(
+        void *user,
+        int line_no_1based,
+        const char **line_ptr,
+        size_t *line_len);
 
-typedef struct apep_text_source
-{
-    const char *name; /* filename or label */
-    apep_line_getter_fn get_line;
-    void *user;
-} apep_text_source_t;
+    typedef struct apep_text_source
+    {
+        const char *name; /* filename or label */
+        apep_line_getter_fn get_line;
+        void *user;
+    } apep_text_source_t;
 
-/* Helper: create text source from a single in-memory UTF-8 string. */
-apep_text_source_t apep_text_source_from_string(const char *name, const char *text);
+    /* Helper: create text source from a single in-memory UTF-8 string. */
+    apep_text_source_t apep_text_source_from_string(const char *name, const char *text);
 
-/* ----------------------------
-Pretty printers
----------------------------- */
+    /* ----------------------------
+    Pretty printers
+    ---------------------------- */
 
-/* Pretty print a text error with caret/range.
-- code may be NULL (e.g. "E_SYNTAX")
-- message must be non-NULL
-*/
-void apep_print_text_diagnostic(
-    const apep_options_t *opt,
-    apep_severity_t sev,
-    const char *code,
-    const char *message,
-    const apep_text_source_t *src,
-    apep_loc_t loc,
-    int span_len_cols, /* 0 => caret only */
-    const apep_note_t *notes,
-    size_t notes_count);
+    /* Pretty print a text error with caret/range.
+    - code may be NULL (e.g. "E_SYNTAX")
+    - message must be non-NULL
+    */
+    void apep_print_text_diagnostic(
+        const apep_options_t *opt,
+        apep_severity_t sev,
+        const char *code,
+        const char *message,
+        const apep_text_source_t *src,
+        apep_loc_t loc,
+        int span_len_cols, /* 0 => caret only */
+        const apep_note_t *notes,
+        size_t notes_count);
 
-/* Pretty print a binary diagnostic with hexdump and highlighted span.
-- data may be NULL if not available (then prints metadata only)
-*/
-void apep_print_hex_diagnostic(
-    const apep_options_t *opt,
-    apep_severity_t sev,
-    const char *code,
-    const char *message,
-    const char *blob_name,
-    const uint8_t *data,
-    size_t data_size,
-    apep_span_t span,
-    const apep_note_t *notes,
-    size_t notes_count);
+    /* Pretty print a binary diagnostic with hexdump and highlighted span.
+    - data may be NULL if not available (then prints metadata only)
+    */
+    void apep_print_hex_diagnostic(
+        const apep_options_t *opt,
+        apep_severity_t sev,
+        const char *code,
+        const char *message,
+        const char *blob_name,
+        const uint8_t *data,
+        size_t data_size,
+        apep_span_t span,
+        const apep_note_t *notes,
+        size_t notes_count);
 
-/* ----------------------------
-Utility (public, minimal)
----------------------------- */
+    /* ----------------------------
+    Utility (public, minimal)
+    ---------------------------- */
 
-const char *apep_severity_name(apep_severity_t sev);
+    const char *apep_severity_name(apep_severity_t sev);
+
+    /* ----------------------------
+       Exception Handling
+       ---------------------------- */
+
+    /* Exception handling is in separate header */
+    /* Include apep/apep_exception.h for exception support */
 
 #ifdef __cplusplus
 }

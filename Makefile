@@ -78,6 +78,7 @@ SRC = \
     src/apep_scheme.c \
     src/apep_stack.c \
     src/apep_suggest.c \
+    src/apep_exception.c \
     src/apep_multispan.c \
     src/apep_perf.c \
     src/apep_progress.c \
@@ -94,6 +95,7 @@ DEMO_LOGGER      = bin/apep_logger_demo$(EXE)
 DEMO_I18N        = bin/apep_i18n_demo$(EXE)
 DEMO_I18N_FULL   = bin/apep_i18n_comprehensive_demo$(EXE)
 DEMO_NEW_FEATURES= bin/apep_new_features_demo$(EXE)
+DEMO_EXCEPTION   = bin/apep_exception_demo$(EXE)
 
 all: $(LIB) examples
 
@@ -117,6 +119,7 @@ examples: $(LIB) | bin
 	$(CC) $(CFLAGS) -o $(DEMO_I18N)         examples/i18n_demo.c                  $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_I18N_FULL)    examples/i18n_comprehensive_demo.c    $(LIB) $(LDFLAGS)
 	$(CC) $(CFLAGS) -o $(DEMO_NEW_FEATURES) examples/new_features_demo.c          $(LIB) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(DEMO_EXCEPTION)    examples/exception_demo.c             $(LIB) $(LDFLAGS)
 
 clean:
 	$(CLEAN_OBJ)
@@ -131,6 +134,7 @@ install: $(LIB)
 	@copy /Y include\apep\apep.h "$(INCDIR)\apep\apep.h"
 	@copy /Y include\apep\apep_helpers.h "$(INCDIR)\apep\apep_helpers.h"
 	@copy /Y include\apep\apep_i18n.h "$(INCDIR)\apep\apep_i18n.h"
+	@copy /Y include\apep\apep_exception.h "$(INCDIR)\apep\apep_exception.h"
 	@if not exist "$(LIBDIR)" mkdir "$(LIBDIR)"
 	@copy /Y $(LIB) "$(LIBDIR)\$(LIB)"
 	@echo Done.
@@ -141,6 +145,7 @@ uninstall:
 	@if exist "$(INCDIR)\apep\apep.h" del /Q "$(INCDIR)\apep\apep.h"
 	@if exist "$(INCDIR)\apep\apep_helpers.h" del /Q "$(INCDIR)\apep\apep_helpers.h"
 	@if exist "$(INCDIR)\apep\apep_i18n.h" del /Q "$(INCDIR)\apep\apep_i18n.h"
+	@if exist "$(INCDIR)\apep\apep_exception.h" del /Q "$(INCDIR)\apep\apep_exception.h"
 	@if exist "$(INCDIR)\apep" rmdir /Q "$(INCDIR)\apep" 2>NUL
 	@echo Done.
 else
@@ -151,6 +156,7 @@ install: $(LIB)
 	$(INSTALL_DATA) include/apep/apep.h         "$(DESTDIR)$(INCDIR)/apep/apep.h"
 	$(INSTALL_DATA) include/apep/apep_helpers.h "$(DESTDIR)$(INCDIR)/apep/apep_helpers.h"
 	$(INSTALL_DATA) include/apep/apep_i18n.h    "$(DESTDIR)$(INCDIR)/apep/apep_i18n.h"
+	$(INSTALL_DATA) include/apep/apep_exception.h "$(DESTDIR)$(INCDIR)/apep/apep_exception.h"
 	$(INSTALL_DIR)  "$(DESTDIR)$(LIBDIR)"
 	$(INSTALL_DATA) $(LIB) "$(DESTDIR)$(LIBDIR)/$(LIB)"
 	@echo Done.
@@ -161,6 +167,7 @@ uninstall:
 	-@rm -f "$(DESTDIR)$(INCDIR)/apep/apep.h"
 	-@rm -f "$(DESTDIR)$(INCDIR)/apep/apep_helpers.h"
 	-@rm -f "$(DESTDIR)$(INCDIR)/apep/apep_i18n.h"
+	-@rm -f "$(DESTDIR)$(INCDIR)/apep/apep_exception.h"
 	-@rmdir "$(DESTDIR)$(INCDIR)/apep" 2>/dev/null || true
 	@echo Done.
 endif

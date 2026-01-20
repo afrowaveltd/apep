@@ -1,6 +1,7 @@
 #include "../include/apep/apep.h"
 #include "../include/apep/apep_helpers.h"
 #include "../include/apep/apep_i18n.h"
+#include "../include/apep/apep_exception.h"
 #include "common_i18n.h"
 #include <string.h>
 #include <stdio.h>
@@ -327,6 +328,35 @@ int main(int argc, char **argv)
     }
 
     /* ================================================== */
+    print_separator("Exception Handling");
+
+    {
+        apep_options_t exc_opt = {0};
+        apep_options_default(&exc_opt);
+
+        /* Simple exception */
+        printf("Simple Exception:\n");
+        APEP_EXCEPTION(&exc_opt, "NullPointerException",
+                       "Pointer 'data' was NULL at offset %d", 42);
+
+        /* Exception chaining */
+        printf("\nException Chain:\n");
+        apep_exception_t *inner = apep_exception_create(
+            "IOException", "Failed to read from socket");
+        apep_exception_set_source(inner, "network.c", 145);
+        apep_exception_set_code(inner, -1);
+
+        apep_exception_t *outer = apep_exception_create(
+            "ConnectionException", "Database connection lost");
+        apep_exception_set_source(outer, "database.c", 89);
+        apep_exception_set_inner(outer, inner);
+        apep_exception_capture_stack(outer);
+
+        apep_exception_print_chain(&exc_opt, outer, 0);
+        apep_exception_destroy(outer);
+    }
+
+    /* ================================================== */
     print_separator("sep_complete");
 
     printf("\n");
@@ -342,6 +372,7 @@ int main(int argc, char **argv)
     printf("%s\n", _("feature_7"));
     printf("%s\n", _("feature_8"));
     printf("%s\n", _("feature_9"));
+    printf("  ✓ Exception handling (.NET/Java-style)\n");
     printf("\n");
 
     apep_i18n_cleanup();

@@ -41,3 +41,24 @@
 "file not found":"file not found"
 "unused variable 'x'":"unused variable 'x'"
 
+# Exception handling
+"Stack Trace:":"Stack Trace:"
+"Caused by:":"Caused by:"
+"Error Code:":"Error Code:"
+
+# log_demo strings
+"=== Standard Logging ===":"=== Standard Logging ==="
+"entering early init":"entering early init"
+"config loaded":"config loaded"
+"connected":"connected"
+"slow response detected":"slow response detected"
+"open failed":"open failed"
+"out of memory":"out of memory"
+"=== Exception Logging ===":"=== Exception Logging ==="
+"Database Error:":"Database Error:"
+"Query failed: table 'users' does not exist":"Query failed: table 'users' does not exist"
+"Network Error Chain:":"Network Error Chain:"
+"Connection timed out after 30 seconds":"Connection timed out after 30 seconds"
+"Failed to establish connection to server 192.168.1.100:5432":"Failed to establish connection to server 192.168.1.100:5432"
+"=== Logger with exceptions provides structured error tracking ===":"=== Logger with exceptions provides structured error tracking ==="
+
