@@ -28,6 +28,7 @@ jobs:
         ./bin/i18n_demo
         ./bin/i18n_comprehensive_demo
         ./bin/new_features_demo
+        ./bin/exception_demo
 
   build-macos:
     runs-on: macos-latest
@@ -47,6 +48,7 @@ jobs:
         ./bin/i18n_demo
         ./bin/i18n_comprehensive_demo
         ./bin/new_features_demo
+        ./bin/exception_demo
 
   build-windows:
     runs-on: windows-latest
@@ -77,3 +79,4 @@ jobs:
         ./bin/i18n_demo.exe
         ./bin/i18n_comprehensive_demo.exe
         ./bin/new_features_demo.exe
+        ./bin/exception_demo.exe
