@@ -20,16 +20,16 @@ jobs:
     
     - name: Run tests
       run: |
-        ./bin/text_error_demo
-        ./bin/hex_error_demo
-        ./bin/log_demo
-        ./bin/show_demo --plain
-        ./bin/helpers_demo
-        ./bin/i18n_demo
-        ./bin/i18n_stress_demo
-        ./bin/i18n_comprehensive_demo
-        ./bin/new_features_demo
-        ./bin/exception_demo
+        ./bin/apep_text_demo
+        ./bin/apep_hex_demo
+        ./bin/apep_log_demo
+        ./bin/apep_show_demo --plain
+        ./bin/apep_helpers_demo
+        ./bin/apep_i18n_demo
+        ./bin/apep_i18n_stress_demo
+        ./bin/apep_i18n_comprehensive_demo
+        ./bin/apep_new_features_demo
+        ./bin/apep_exception_demo
 
   build-macos:
     runs-on: macos-latest
@@ -41,16 +41,16 @@ jobs:
     
     - name: Run tests
       run: |
-        ./bin/text_error_demo
-        ./bin/hex_error_demo
-        ./bin/log_demo
-        ./bin/show_demo --plain
-        ./bin/helpers_demo
-        ./bin/i18n_demo
-        ./bin/i18n_stress_demo
-        ./bin/i18n_comprehensive_demo
-        ./bin/new_features_demo
-        ./bin/exception_demo
+        ./bin/apep_text_demo
+        ./bin/apep_hex_demo
+        ./bin/apep_log_demo
+        ./bin/apep_show_demo --plain
+        ./bin/apep_helpers_demo
+        ./bin/apep_i18n_demo
+        ./bin/apep_i18n_stress_demo
+        ./bin/apep_i18n_comprehensive_demo
+        ./bin/apep_new_features_demo
+        ./bin/apep_exception_demo
 
   build-windows:
     runs-on: windows-latest
@@ -73,13 +73,13 @@ jobs:
     
     - name: Run tests
       run: |
-        ./bin/text_error_demo.exe
-        ./bin/hex_error_demo.exe
-        ./bin/log_demo.exe
-        ./bin/show_demo.exe --plain
-        ./bin/helpers_demo.exe
-        ./bin/i18n_demo.exe
-        ./bin/i18n_stress_demo.exe
-        ./bin/i18n_comprehensive_demo.exe
-        ./bin/new_features_demo.exe
-        ./bin/exception_demo.exe
+        ./bin/apep_text_demo.exe
+        ./bin/apep_hex_demo.exe
+        ./bin/apep_log_demo.exe
+        ./bin/apep_show_demo.exe --plain
+        ./bin/apep_helpers_demo.exe
+        ./bin/apep_i18n_demo.exe
+        ./bin/apep_i18n_stress_demo.exe
+        ./bin/apep_i18n_comprehensive_demo.exe
+        ./bin/apep_new_features_demo.exe
+        ./bin/apep_exception_demo.exe
