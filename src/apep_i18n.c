@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -158,6 +159,231 @@ static char *trim_whitespace(char *str)
     return str;
 }
 
+static char *find_unquoted_colon(char *s)
+{
+    int in_quotes = 0;
+    int escaped = 0;
+
+    for (char *p = s; *p; p++)
+    {
+        if (escaped)
+        {
+            escaped = 0;
+            continue;
+        }
+
+        if (in_quotes && *p == '\\')
+        {
+            escaped = 1;
+            continue;
+        }
+
+        if (*p == '"')
+        {
+            in_quotes = !in_quotes;
+            continue;
+        }
+
+        if (!in_quotes && *p == ':')
+            return p;
+    }
+
+    return NULL;
+}
+
+static int utf8_append_codepoint(char *out, size_t out_cap, size_t *out_len, unsigned int cp)
+{
+    if (cp <= 0x7F)
+    {
+        if (*out_len + 1 >= out_cap)
+            return -1;
+        out[(*out_len)++] = (char)cp;
+    }
+    else if (cp <= 0x7FF)
+    {
+        if (*out_len + 2 >= out_cap)
+            return -1;
+        out[(*out_len)++] = (char)(0xC0 | (cp >> 6));
+        out[(*out_len)++] = (char)(0x80 | (cp & 0x3F));
+    }
+    else if (cp <= 0xFFFF)
+    {
+        if (*out_len + 3 >= out_cap)
+            return -1;
+        out[(*out_len)++] = (char)(0xE0 | (cp >> 12));
+        out[(*out_len)++] = (char)(0x80 | ((cp >> 6) & 0x3F));
+        out[(*out_len)++] = (char)(0x80 | (cp & 0x3F));
+    }
+    else if (cp <= 0x10FFFF)
+    {
+        if (*out_len + 4 >= out_cap)
+            return -1;
+        out[(*out_len)++] = (char)(0xF0 | (cp >> 18));
+        out[(*out_len)++] = (char)(0x80 | ((cp >> 12) & 0x3F));
+        out[(*out_len)++] = (char)(0x80 | ((cp >> 6) & 0x3F));
+        out[(*out_len)++] = (char)(0x80 | (cp & 0x3F));
+    }
+    else
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+static int parse_hex4(const char *p, unsigned int *out)
+{
+    unsigned int v = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        unsigned char c = (unsigned char)p[i];
+        if (!isxdigit(c))
+            return -1;
+        v <<= 4;
+        if (c >= '0' && c <= '9')
+            v |= (c - '0');
+        else if (c >= 'a' && c <= 'f')
+            v |= (c - 'a' + 10);
+        else if (c >= 'A' && c <= 'F')
+            v |= (c - 'A' + 10);
+    }
+    *out = v;
+    return 0;
+}
+
+static char *unescape_json_like(const char *src, size_t len)
+{
+    if (!src)
+        return NULL;
+
+    size_t out_cap = (len * 4) + 1;
+    char *out = (char *)malloc(out_cap);
+    if (!out)
+        return NULL;
+
+    size_t out_len = 0;
+    for (size_t i = 0; i < len; i++)
+    {
+        char c = src[i];
+        if (c != '\\')
+        {
+            if (out_len + 1 >= out_cap)
+                break;
+            out[out_len++] = c;
+            continue;
+        }
+
+        if (i + 1 >= len)
+        {
+            if (out_len + 1 >= out_cap)
+                break;
+            out[out_len++] = '\\';
+            continue;
+        }
+
+        char esc = src[++i];
+        switch (esc)
+        {
+        case '"':
+            out[out_len++] = '"';
+            break;
+        case '\\':
+            out[out_len++] = '\\';
+            break;
+        case '/':
+            out[out_len++] = '/';
+            break;
+        case 'b':
+            out[out_len++] = '\b';
+            break;
+        case 'f':
+            out[out_len++] = '\f';
+            break;
+        case 'n':
+            out[out_len++] = '\n';
+            break;
+        case 'r':
+            out[out_len++] = '\r';
+            break;
+        case 't':
+            out[out_len++] = '\t';
+            break;
+        case 'u':
+        {
+            if (i + 4 <= len)
+            {
+                unsigned int cp = 0;
+                if (parse_hex4(src + i + 1, &cp) == 0)
+                {
+                    i += 4;
+
+                    if (cp >= 0xD800 && cp <= 0xDBFF && i + 6 < len && src[i + 1] == '\\' && src[i + 2] == 'u')
+                    {
+                        unsigned int low = 0;
+                        if (parse_hex4(src + i + 3, &low) == 0 && low >= 0xDC00 && low <= 0xDFFF)
+                        {
+                            i += 6;
+                            cp = 0x10000 + (((cp - 0xD800) << 10) | (low - 0xDC00));
+                        }
+                    }
+
+                    if (utf8_append_codepoint(out, out_cap, &out_len, cp) == 0)
+                        break;
+                }
+            }
+            /* fallback to literal sequence if invalid */
+            out[out_len++] = '\\';
+            out[out_len++] = 'u';
+            break;
+        }
+        default:
+            /* Preserve unknown escape literally */
+            out[out_len++] = esc;
+            break;
+        }
+    }
+
+    out[out_len] = '\0';
+    return out;
+}
+
+static int parse_quoted_token(const char *p, const char **end, char **out)
+{
+    if (!p || *p != '"')
+        return -1;
+
+    int escaped = 0;
+    const char *start = p + 1;
+    const char *q = start;
+    for (; *q; q++)
+    {
+        if (escaped)
+        {
+            escaped = 0;
+            continue;
+        }
+        if (*q == '\\')
+        {
+            escaped = 1;
+            continue;
+        }
+        if (*q == '"')
+            break;
+    }
+
+    if (*q != '"')
+        return -1;
+
+    size_t len = (size_t)(q - start);
+    char *unescaped = unescape_json_like(start, len);
+    if (!unescaped)
+        return -1;
+
+    *end = q + 1;
+    *out = unescaped;
+    return 0;
+}
+
 static int i18n_parse_line(char *line)
 {
     /* Skip empty lines and comments */
@@ -169,38 +395,71 @@ static int i18n_parse_line(char *line)
     if (trimmed[0] == '{' || trimmed[0] == '}')
         return 0;
 
-    /* Find first ':' */
-    char *colon = strchr(trimmed, ':');
+    /* Find ':' outside quotes */
+    char *colon = find_unquoted_colon(trimmed);
     if (!colon)
         return -1; /* Invalid format */
 
     /* Split key and value */
     *colon = '\0';
-    char *key = trim_whitespace(trimmed);
-    char *value = trim_whitespace(colon + 1);
+    char *key_raw = trim_whitespace(trimmed);
+    char *value_raw = trim_whitespace(colon + 1);
 
-    /* Remove trailing comma if present (for JSON format) */
-    size_t value_len = strlen(value);
-    if (value_len > 0 && value[value_len - 1] == ',')
+    char *key = NULL;
+    char *value = NULL;
+
+    if (key_raw[0] == '"')
     {
-        value[value_len - 1] = '\0';
-        value = trim_whitespace(value);
+        const char *end = NULL;
+        if (parse_quoted_token(key_raw, &end, &key) != 0)
+            return -1;
+    }
+    else
+    {
+        key = strdup(key_raw);
     }
 
-    /* Remove quotes if present */
-    if (key[0] == '"' && key[strlen(key) - 1] == '"')
-    {
-        key++;
-        key[strlen(key) - 1] = '\0';
-    }
+    if (!key)
+        return -1;
 
-    if (value[0] == '"' && value[strlen(value) - 1] == '"')
+    if (value_raw[0] == '"')
     {
-        value++;
-        value[strlen(value) - 1] = '\0';
+        const char *end = NULL;
+        if (parse_quoted_token(value_raw, &end, &value) != 0)
+        {
+            free(key);
+            return -1;
+        }
+        /* Allow trailing comma/whitespace after quoted value */
+        if (end)
+        {
+            const char *p = end;
+            while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+                p++;
+            if (*p == ',')
+            {
+                p++;
+                while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+                    p++;
+            }
+            /* Any remaining trailing content is ignored for robustness */
+        }
+    }
+    else
+    {
+        /* Remove trailing comma if present */
+        size_t value_len = strlen(value_raw);
+        if (value_len > 0 && value_raw[value_len - 1] == ',')
+        {
+            value_raw[value_len - 1] = '\0';
+            value_raw = trim_whitespace(value_raw);
+        }
+        value = strdup(value_raw);
     }
 
     i18n_add_entry(key, value);
+    free(key);
+    free(value);
     return 0;
 }
 

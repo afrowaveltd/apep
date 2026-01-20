@@ -372,7 +372,9 @@ int main(int argc, char **argv)
     printf("%s\n", _("feature_7"));
     printf("%s\n", _("feature_8"));
     printf("%s\n", _("feature_9"));
-    printf("  ✓ Exception handling (.NET/Java-style)\n");
+    apep_caps_t caps = apep_detect_caps(stdout, &opt);
+    const char *tick = caps.unicode ? u8"\u2713" : "*";
+    printf("  %s Exception handling (.NET/Java-style)\n", tick);
     printf("\n");
 
     apep_i18n_cleanup();

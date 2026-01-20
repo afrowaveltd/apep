@@ -35,6 +35,43 @@ typedef struct
     char **symbols;
 } apep_stack_trace_t;
 
+static void apep_fputs_utf8(FILE *out, const char *s)
+{
+    if (!s || !out)
+        return;
+
+#ifdef _WIN32
+    HANDLE h = NULL;
+    if (out == stdout)
+        h = GetStdHandle(STD_OUTPUT_HANDLE);
+    else if (out == stderr)
+        h = GetStdHandle(STD_ERROR_HANDLE);
+
+    if (h && h != INVALID_HANDLE_VALUE)
+    {
+        DWORD mode = 0;
+        if (GetConsoleMode(h, &mode))
+        {
+            int wlen = MultiByteToWideChar(CP_UTF8, 0, s, -1, NULL, 0);
+            if (wlen > 0)
+            {
+                WCHAR *wbuf = (WCHAR *)malloc(sizeof(WCHAR) * (size_t)wlen);
+                if (wbuf)
+                {
+                    MultiByteToWideChar(CP_UTF8, 0, s, -1, wbuf, wlen);
+                    DWORD written = 0;
+                    WriteConsoleW(h, wbuf, (DWORD)(wlen - 1), &written, NULL);
+                    free(wbuf);
+                    return;
+                }
+            }
+        }
+    }
+#endif
+
+    fputs(s, out);
+}
+
 apep_exception_t *apep_exception_create(const char *type, const char *format, ...)
 {
     apep_exception_t *ex = (apep_exception_t *)calloc(1, sizeof(apep_exception_t));
@@ -217,7 +254,9 @@ void apep_exception_print(const apep_options_t *opt, const apep_exception_t *ex)
     // Error code
     if (ex->error_code != 0)
     {
-        fprintf(out, "  %s %d", _("Error Code:"), ex->error_code);
+        fputs("  ", out);
+        apep_fputs_utf8(out, _("Error Code:"));
+        fprintf(out, " %d", ex->error_code);
 
         // Try to get errno description
 #ifdef _WIN32
@@ -241,7 +280,9 @@ void apep_exception_print(const apep_options_t *opt, const apep_exception_t *ex)
     // Stack trace
     if (ex->stack_trace)
     {
-        fprintf(out, "  %s\n", _("Stack Trace:"));
+        fputs("  ", out);
+        apep_fputs_utf8(out, _("Stack Trace:"));
+        fputc('\n', out);
         print_stack_trace(out, (const apep_stack_trace_t *)ex->stack_trace, 4);
     }
 }
@@ -263,7 +304,9 @@ void apep_exception_print_chain(const apep_options_t *opt, const apep_exception_
 
         if (depth > 0)
         {
-            fprintf(out, "\n%s\n", _("Caused by:"));
+            fputc('\n', out);
+            apep_fputs_utf8(out, _("Caused by:"));
+            fputc('\n', out);
         }
 
         apep_exception_print(opt, current);

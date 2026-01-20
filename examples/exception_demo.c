@@ -12,9 +12,50 @@
 
 #include "apep/apep.h"
 #include "apep/apep_exception.h"
+#include "apep/apep_i18n.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <locale.h>
+#include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+// Find locales directory relative to where we are
+static const char *find_locales_dir(void)
+{
+    /* Try current directory first */
+    FILE *test = fopen("locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "locales";
+    }
+
+    /* Try parent directory (when running from bin/) */
+    test = fopen("../locales/en.loc", "r");
+    if (test)
+    {
+        fclose(test);
+        return "../locales";
+    }
+
+    /* Fallback to current directory anyway */
+    return "locales";
+}
+
+static const char *parse_lang_arg(int argc, char **argv)
+{
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--lang") == 0 && i + 1 < argc)
+        {
+            return argv[i + 1];
+        }
+    }
+    return NULL;
+}
 
 // Simulate deep call stack for stack trace demo
 static int level3_fails(const apep_options_t *opt)
@@ -129,11 +170,23 @@ static void print_separator(const char *title)
 
 int main(int argc, char *argv[])
 {
-    (void)argc;
-    (void)argv;
+#ifdef _WIN32
+    /* Prefer UTF-8 locale where available */
+    if (!setlocale(LC_ALL, ".UTF-8"))
+        setlocale(LC_ALL, "");
+    /* Enable UTF-8 output on Windows console */
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#else
+    setlocale(LC_ALL, "");
+#endif
+
+    const char *lang = parse_lang_arg(argc, argv);
+    apep_i18n_init(lang, find_locales_dir());
 
     apep_options_t opt = {0};
     apep_options_default(&opt);
+    opt.out = stdout;
 
     printf("APEP Exception Handling Demo\n");
     printf("============================\n\n");
@@ -194,12 +247,15 @@ int main(int argc, char *argv[])
 
     printf("\n=== Demo Complete ===\n");
     printf("Exception handling provides:\n");
-    printf("  ✓ Type information\n");
-    printf("  ✓ Error messages\n");
-    printf("  ✓ Source locations\n");
-    printf("  ✓ Stack traces\n");
-    printf("  ✓ Exception chaining\n");
-    printf("  ✓ Error codes\n");
+    apep_caps_t caps = apep_detect_caps(stdout, &opt);
+    const char *tick = caps.unicode ? u8"\u2713" : "*";
+    printf("  %s Type information\n", tick);
+    printf("  %s Error messages\n", tick);
+    printf("  %s Source locations\n", tick);
+    printf("  %s Stack traces\n", tick);
+    printf("  %s Exception chaining\n", tick);
+    printf("  %s Error codes\n", tick);
 
+    apep_i18n_cleanup();
     return 0;
 }

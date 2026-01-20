@@ -26,6 +26,7 @@ jobs:
         ./bin/show_demo --plain
         ./bin/helpers_demo
         ./bin/i18n_demo
+        ./bin/i18n_stress_demo
         ./bin/i18n_comprehensive_demo
         ./bin/new_features_demo
         ./bin/exception_demo
@@ -46,6 +47,7 @@ jobs:
         ./bin/show_demo --plain
         ./bin/helpers_demo
         ./bin/i18n_demo
+        ./bin/i18n_stress_demo
         ./bin/i18n_comprehensive_demo
         ./bin/new_features_demo
         ./bin/exception_demo
@@ -77,6 +79,7 @@ jobs:
         ./bin/show_demo.exe --plain
         ./bin/helpers_demo.exe
         ./bin/i18n_demo.exe
+        ./bin/i18n_stress_demo.exe
         ./bin/i18n_comprehensive_demo.exe
         ./bin/new_features_demo.exe
         ./bin/exception_demo.exe

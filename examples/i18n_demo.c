@@ -50,19 +50,21 @@ int main(void)
     const char *input = "(1+)\n";
     apep_text_source_t src = apep_text_source_from_string("input.expr", input);
 
-    apep_note_t notes[] = {
-        {_("hint"), _("remove ')' or add a number after '+'.")}};
+    {
+        apep_note_t notes[] = {
+            {_("hint"), _("remove ')' or add a number after '+'.")}};
 
-    apep_print_text_diagnostic(
-        &opt,
-        APEP_SEV_ERROR,
-        "E_SYNTAX",
-        _("unexpected token ')'"),
-        &src,
-        (apep_loc_t){1, 4},
-        1,
-        notes,
-        1);
+        apep_print_text_diagnostic(
+            &opt,
+            APEP_SEV_ERROR,
+            "E_SYNTAX",
+            _("unexpected token ')'"),
+            &src,
+            (apep_loc_t){1, 4},
+            1,
+            notes,
+            1);
+    }
 
     printf("\n--- Testing different locales ---\n\n");
 
@@ -71,16 +73,21 @@ int main(void)
     apep_i18n_set_locale("cs");
     printf("Current locale: %s\n\n", apep_i18n_get_locale());
 
-    apep_print_text_diagnostic(
-        &opt,
-        APEP_SEV_ERROR,
-        "E_SYNTAX",
-        _("unexpected token ')'"),
-        &src,
-        (apep_loc_t){1, 4},
-        1,
-        notes,
-        1);
+    {
+        apep_note_t notes[] = {
+            {_("hint"), _("remove ')' or add a number after '+'.")}};
+
+        apep_print_text_diagnostic(
+            &opt,
+            APEP_SEV_ERROR,
+            "E_SYNTAX",
+            _("unexpected token ')'"),
+            &src,
+            (apep_loc_t){1, 4},
+            1,
+            notes,
+            1);
+    }
 
     /* Test English locale */
     printf("\n\nSwitching to English locale...\n");

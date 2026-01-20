@@ -64,7 +64,7 @@ static void json_escape_string(FILE *out, const char *str, int use_colors)
             fputs("\\t", out);
             break;
         default:
-            if (*p < 32)
+            if ((unsigned char)*p < 32)
             {
                 fprintf(out, "\\u%04x", (unsigned char)*p);
             }
