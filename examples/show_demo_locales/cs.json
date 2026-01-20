@@ -1,0 +1,10 @@
+{
+    "show_demo_title": "APEP (Afrowave Pretty Error Print) - Demonstrace",
+    "usage_info": "Použití: show_demo [volby]",
+    "available_options": "Dostupné volby:",
+    "show_all_demos": "  --all              Zobrazit všechny demonstrační funkce",
+    "show_specific": "  --text, --hex, atd Zobrazit konkrétní demo funkce",
+    "color_option": "  --color <schéma>   Použít barevné schéma (default, rust, atd.)",
+    "no_color": "  --no-color         Vypnout barvy",
+    "help_option": "  --help             Zobrazit tuto nápovědu"
+}

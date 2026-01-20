@@ -1,0 +1,8 @@
+{
+    "entering early init": "entering early init",
+    "config loaded": "config loaded",
+    "connected": "connected",
+    "slow response detected": "slow response detected",
+    "open failed": "open failed",
+    "out of memory": "out of memory"
+}

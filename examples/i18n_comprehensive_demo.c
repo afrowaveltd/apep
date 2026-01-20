@@ -3,6 +3,10 @@
 #include "../include/apep/apep_i18n.h"
 #include <stdio.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* Find locales directory relative to where we are */
 static const char *find_locales_dir(void)
 {
@@ -105,6 +109,12 @@ void demo_severity_levels(const char *locale_name)
 
 int main(void)
 {
+#ifdef _WIN32
+    /* Enable UTF-8 output on Windows console */
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     apep_options_t opt;
     apep_options_default(&opt);
     opt.out = stdout;

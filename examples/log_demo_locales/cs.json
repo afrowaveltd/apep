@@ -1,0 +1,8 @@
+{
+    "entering early init": "vstup do raného inicializace",
+    "config loaded": "konfigurace načtena",
+    "connected": "připojeno",
+    "slow response detected": "detekována pomalá odpověď",
+    "open failed": "otevření selhalo",
+    "out of memory": "nedostatek paměti"
+}

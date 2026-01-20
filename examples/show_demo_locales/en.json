@@ -1,0 +1,10 @@
+{
+    "show_demo_title": "APEP (Afrowave Pretty Error Print) - Demonstration",
+    "usage_info": "Usage: show_demo [options]",
+    "available_options": "Available options:",
+    "show_all_demos": "  --all              Show all demonstration features",
+    "show_specific": "  --text, --hex, etc Show specific feature demos",
+    "color_option": "  --color <scheme>   Use color scheme (default, rust, etc.)",
+    "no_color": "  --no-color         Disable colors",
+    "help_option": "  --help             Show this help message"
+}

@@ -165,6 +165,10 @@ static int i18n_parse_line(char *line)
     if (trimmed[0] == '\0' || trimmed[0] == '#')
         return 0;
 
+    /* Skip JSON braces (for flat JSON support) */
+    if (trimmed[0] == '{' || trimmed[0] == '}')
+        return 0;
+
     /* Find first ':' */
     char *colon = strchr(trimmed, ':');
     if (!colon)
@@ -174,6 +178,14 @@ static int i18n_parse_line(char *line)
     *colon = '\0';
     char *key = trim_whitespace(trimmed);
     char *value = trim_whitespace(colon + 1);
+
+    /* Remove trailing comma if present (for JSON format) */
+    size_t value_len = strlen(value);
+    if (value_len > 0 && value[value_len - 1] == ',')
+    {
+        value[value_len - 1] = '\0';
+        value = trim_whitespace(value);
+    }
 
     /* Remove quotes if present */
     if (key[0] == '"' && key[strlen(key) - 1] == '"')
@@ -197,6 +209,11 @@ static int i18n_load_locale_file(const char *filepath)
     FILE *f = fopen(filepath, "r");
     if (!f)
         return -1;
+
+#ifdef _WIN32
+    /* Set console to UTF-8 for proper display */
+    SetConsoleOutputCP(CP_UTF8);
+#endif
 
     char line[2048];
     int line_num = 0;
@@ -282,18 +299,27 @@ int apep_i18n_init(const char *locale, const char *locales_dir)
     strncpy(g_i18n.locales_dir, dir, sizeof(g_i18n.locales_dir) - 1);
     g_i18n.locales_dir[sizeof(g_i18n.locales_dir) - 1] = '\0';
 
-    /* Build locale file path */
+    /* Build locale file path - try .json first, then .loc */
     char filepath[512];
-    snprintf(filepath, sizeof(filepath), "%s/%s.loc", g_i18n.locales_dir, g_i18n.locale);
+    snprintf(filepath, sizeof(filepath), "%s/%s.json", g_i18n.locales_dir, g_i18n.locale);
 
     /* Try to load locale file */
     if (i18n_load_locale_file(filepath) < 0)
     {
-        /* Fallback to English */
-        if (strcmp(g_i18n.locale, "en") != 0)
+        /* Try .loc extension */
+        snprintf(filepath, sizeof(filepath), "%s/%s.loc", g_i18n.locales_dir, g_i18n.locale);
+        if (i18n_load_locale_file(filepath) < 0)
         {
-            snprintf(filepath, sizeof(filepath), "%s/en.loc", g_i18n.locales_dir);
-            i18n_load_locale_file(filepath); /* Ignore error */
+            /* Fallback to English */
+            if (strcmp(g_i18n.locale, "en") != 0)
+            {
+                snprintf(filepath, sizeof(filepath), "%s/en.json", g_i18n.locales_dir);
+                if (i18n_load_locale_file(filepath) < 0)
+                {
+                    snprintf(filepath, sizeof(filepath), "%s/en.loc", g_i18n.locales_dir);
+                    i18n_load_locale_file(filepath); /* Ignore error */
+                }
+            }
         }
     }
 

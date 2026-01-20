@@ -1,7 +1,11 @@
 #include "../include/apep/apep.h"
+#include "../include/apep/apep_i18n.h"
+#include "common_i18n.h"
 
-int main(void)
+int main(int argc, char **argv)
 {
+    demo_i18n_init(argc, argv, "hex_error_demo");
+
     uint8_t buf[64];
     for (size_t i = 0; i < sizeof(buf); i++)
         buf[i] = (uint8_t)i;
@@ -11,13 +15,13 @@ int main(void)
     opt.out = stderr;
 
     apep_note_t notes[] = {
-        {"note", "This is a demo. Hexdump rendering will be added next."}};
+        {_("note"), _("This is a demo. Hexdump rendering will be added next.")}};
 
     apep_print_hex_diagnostic(
         &opt,
         APEP_SEV_ERROR,
         "E_BIN",
-        "checksum mismatch",
+        _("checksum mismatch"),
         "payload.bin",
         buf,
         sizeof(buf),
@@ -25,5 +29,6 @@ int main(void)
         notes,
         1);
 
+    apep_i18n_cleanup();
     return 0;
 }

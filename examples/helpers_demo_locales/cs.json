@@ -1,0 +1,22 @@
+{
+    "=== APEP Helpers Demo ===": "=== APEP Pomocné funkce Demo ===",
+    "1. Quick logging macros:": "1. Rychlé logovací makra:",
+    "application started successfully": "aplikace úspěšně spuštěna",
+    "using default configuration": "používám výchozí konfiguraci",
+    "connection timeout": "vypršel časový limit připojení",
+    "2. Formatted messages:": "2. Formátované zprávy:",
+    "user '%s' logged in from %s": "uživatel '%s' se přihlásil z %s",
+    "cache usage at %d%% capacity": "využití cache na %d%% kapacity",
+    "3. Simple errors:": "3. Jednoduché chyby:",
+    "invalid configuration": "neplatná konfigurace",
+    "check config.ini file": "zkontrolujte soubor config.ini",
+    "expected %d arguments, got %d": "očekáváno %d argumentů, získáno %d",
+    "4. File errors:": "4. Chyby souborů:",
+    "open": "otevření",
+    "permission denied": "přístup odepřen",
+    "5. Unknown identifier with suggestion:": "5. Neznámý identifikátor s návrhem:",
+    "6. Assert failure:": "6. Selhání assertion:",
+    "7. Debug logging (compiled out in release):": "7. Debug logování (vynecháno v release):",
+    "this message only appears in debug builds": "tato zpráva se zobrazuje jen v debug buildech",
+    "=== Demo Complete ===": "=== Demo Dokončeno ==="
+}

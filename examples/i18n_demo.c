@@ -2,6 +2,10 @@
 #include "../include/apep/apep_helpers.h"
 #include "../include/apep/apep_i18n.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* Find locales directory relative to where we are */
 static const char *find_locales_dir(void)
 {
@@ -27,6 +31,12 @@ static const char *find_locales_dir(void)
 
 int main(void)
 {
+#ifdef _WIN32
+    /* Enable UTF-8 output on Windows console */
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     /* Initialize localization with detected system locale */
     apep_i18n_init(NULL, find_locales_dir());
 
