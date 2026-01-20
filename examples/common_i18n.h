@@ -26,7 +26,7 @@ static const char *parse_lang_arg(int argc, char **argv)
 /* Find locales directory relative to executable */
 static const char *find_demo_locales_dir(const char *demo_name)
 {
-    static char path[512];
+    static char path[480];
     static char testpath[512];
 
     /* Try current directory first (running from examples/) */

@@ -1,38 +1,278 @@
-# Frequently Asked Questions (FAQ)
+# APEP vs Other Tools
 
-## General
+This document compares APEP with similar libraries and tools in the C ecosystem.
 
-### What is APEP?
-APEP (Afrowave Pretty Error Print) is a zero-dependency C library for printing Rust-style error messages, hexdumps, and structured logs.
+---
 
-### Why "APEP"?
-APEP stands for **Afrowave Pretty Error Print**. It's also a reference to the ancient Egyptian deity Apep (Apophis), symbolizing chaos that must be tamed through clear, truthful diagnostics.
+## Comparison Matrix
 
-### Is APEP a logging framework?
-No. APEP is a **diagnostic renderer**. It focuses solely on making errors and messages visible and understandable. You can build a logging framework on top of APEP (see [docs/LOGGER_INTEGRATION.md](docs/LOGGER_INTEGRATION.md)).
+| Feature | APEP | printf | Log.c | spdlog | ariadne/miette |
+|---------|------|--------|-------|--------|---|
+| **Language** | C | C | C | C++ | Rust |
+| **Dependencies** | Zero | Standard C | Zero | Many | Built-in |
+| **Text Diagnostics** | ✓ | ✗ | ~ | ~ | ✓ |
+| **Binary Diagnostics** | ✓ | ✗ | ✗ | ✗ | ✗ |
+| **Colors** | ✓ | ✗ | ✓ | ✓ | ✓ |
+| **JSON Output** | ✓ | ✗ | ✗ | ✓ | ✗ |
+| **Localization** | ✓ | ✗ | ✗ | ✗ | ✗ |
+| **Thread-safe** | Partial | ✓ | ✓ | ✓ | ✓ |
+| **License** | AHPL | - | MIT | BSD-3 | MIT |
+| **Compile time** | <1s | <1s | <1s | ~5s | - |
 
-### Does APEP work on Windows?
-Yes! APEP works on Windows (MSYS2/MinGW, MSVC), Linux, macOS, and FreeBSD.
+---
 
-## Usage
+## Detailed Comparisons
 
-### Do I need to initialize APEP?
-Not for basic usage. APEP uses sensible defaults. For localization, call `apep_i18n_init()`.
+### APEP vs printf
 
-### Can I disable colors?
-Yes:
+**When to use printf:**
+- Simple debug output
+- Doesn't require formatting or context
+- Compatibility with minimal libc implementations
+
+**When to use APEP:**
+- Error diagnostics with source context
+- Structured, formatted output
+- Hex dumps with annotations
+- Multiple severity levels
+- Localized messages
+
+**Example:**
+
+```c
+// printf approach
+printf("Error: bad token at position %d\n", pos);
+
+// APEP approach
+apep_error_t err;
+apep_error_init(&err, "E001");
+apep_error_set_message(&err, "bad token");
+apep_error_set_location(&err, "input.txt", line, col);
+apep_error_add_context(&err, line_text, line);
+apep_error_print(&err, NULL);
+```
+
+**APEP advantages:**
+- Clear visual hierarchy
+- Automatic Unicode/color detection
+- Consistent formatting
+- Easy to extend with context
+
+### APEP vs Log.c
+
+Log.c is a minimal C logging library.
+
+**Similarities:**
+- Zero dependencies
+- Simple API
+- C library
+- Minimal footprint
+
+**Differences:**
+- APEP: Diagnostic renderer (what to display)
+- Log.c: Logging framework (when/where/what to log)
+- APEP: Rich formatting with context
+- Log.c: Simple log levels + sinks
+- APEP: Hex dump support
+- Log.c: No binary data support
+
+**Use together:**
+You can build Log.c-style logging on top of APEP for rich output.
+
+### APEP vs spdlog
+
+spdlog is a modern C++ logging framework.
+
+**spdlog advantages:**
+- Async logging with performance optimization
+- Multiple sinks (console, file, syslog, etc.)
+- Pattern formatting
+- Performance metrics
+- Thread-safe
+
+**APEP advantages:**
+- Zero dependencies (spdlog has many)
+- C language (no C++ overhead)
+- Hex dump diagnostics
+- Localization system
+- Simpler API
+- Smaller binary
+
+**When to use spdlog:**
+- Performance-critical high-volume logging
+- Complex logging infrastructure
+- C++ projects
+- Server applications
+
+**When to use APEP:**
+- Compiler/interpreter diagnostics
+- User-facing error messages
+- Low-dependency projects
+- C-only codebases
+- Rich context display
+
+**Building a spdlog-style logger on APEP:**
+
+```c
+typedef struct {
+    apep_options_t opts;
+    FILE *file_sink;
+    int min_level;
+} apep_logger_t;
+
+void apep_log_info(apep_logger_t *log, const char *tag, const char *msg) {
+    if (APEP_LVL_INFO >= log->min_level) {
+        apep_print_message(&log->opts, APEP_LVL_INFO, tag, msg);
+        if (log->file_sink) {
+            fprintf(log->file_sink, "[INFO][%s] %s\n", tag, msg);
+        }
+    }
+}
+```
+
+### APEP vs Rust's miette/ariadne
+
+These are Rust diagnostic libraries.
+
+**Their focus:**
+- Rust language diagnostics
+- Rich error display similar to Rust compiler
+- Can output C-compatible formats (JSON)
+
+**Why APEP is needed:**
+- C doesn't have equivalent standard library
+- APEP brings similar patterns to C
+- Smaller footprint than porting Rust code
+
+**Compatibility:**
+- APEP can export JSON for Rust tools
+- Rust tools can consume APEP JSON output
+- Can build Rust bindings to APEP
+
+### APEP vs Custom Solutions
+
+**Without APEP:**
+- Developers write their own error formatting
+- Inconsistent across projects
+- Often missing context (colors, Unicode, terminal width)
+- Difficult to maintain across platforms
+
+**With APEP:**
+- Consistent diagnostics
+- Platform-agnostic code
+- Automatic capability detection
+- Easy to extend
+
+---
+
+## Feature Deep-Dive
+
+### Text Diagnostics (Error Messages with Context)
+
+```
+error[E001]: unexpected token ')'
+  -> input.c:5:10
+      |
+    4 | int main(void) {
+    5 |   return (1+);
+      |           ^^ here
+```
+
+**APEP:** Supports this natively with context lines
+**printf:** Would need 50+ lines of custom code
+**Log.c:** Not designed for this
+**spdlog:** Possible with custom formatting
+**miette/ariadne:** Primary use case (Rust only)
+
+### Binary Diagnostics (Hex Dumps)
+
+```
+      0 1 2 3  4 5 6 7  8 9 A B  C D E F
+    0 48 65 6c 6c 6f 20 57 6f 72 6c 64 21 00 00 00
+    1 00 00 00 ...
+          ^^--- error: invalid marker
+```
+
+**APEP:** Supports this
+**printf:** Would need custom formatting
+**All others:** Not designed for binary
+
+### Localization
+
+```c
+// English
+apep_error("E001", "file not found", "input.txt");
+
+// Czech
+apep_i18n_set_locale("cs");
+apep_error("E001", "soubor nenalezen", "input.txt");
+```
+
+**APEP:** Built-in via `.loc` files
+**printf:** Requires integration with gettext
+**Log.c:** Not designed for localization
+**spdlog:** No built-in system
+**miette/ariadne:** No localization support
+
+---
+
+## Choosing APEP
+
+APEP is the right choice if you need:
+
+1. **Rust-style error messages in C**
+   - Rich context and formatting
+   - Beautiful terminal output
+   - Graceful degradation
+
+2. **Zero dependencies**
+   - Embedded systems
+   - Minimal C runtimes
+   - Secure/constrained environments
+
+3. **Hex dump diagnostics**
+   - Binary protocol parsing
+   - File format validation
+   - Network packet analysis
+
+4. **Localization**
+   - International user bases
+   - Multi-language support
+   - Easy translation workflow
+
+5. **Small binary footprint**
+   - Embedded applications
+   - Static linking
+   - Minimal overhead
+
+6. **Terminal capability detection**
+   - Automatic color/Unicode support
+   - Graceful terminal fallbacks
+   - Deterministic CI output
+
+---
+
+## Migration Guide
+
+### From printf to APEP
+
+**Before:**
+
 ```c
 apep_set_color_mode(APEP_COLOR_OFF);
 ```
+
 Or set the `NO_COLOR` environment variable.
 
 ### Can I force ASCII-only output?
 Yes:
+
 ```c
 apep_set_unicode_mode(APEP_UNICODE_OFF);
 ```
 
 ### How do I change the terminal width?
+
 ```c
 apep_options_t opt;
 apep_options_default(&opt);
@@ -51,6 +291,7 @@ Currently: English and Czech. More languages can be easily added - see [locales/
 
 ### Can I change locale at runtime?
 Yes:
+
 ```c
 apep_i18n_set_locale("cs");  // Switch to Czech
 apep_i18n_set_locale("en");  // Switch to English
@@ -65,12 +306,14 @@ APEP reads system locale settings:
 
 ### How do I integrate APEP into my project?
 **Makefile:**
+
 ```makefile
 CFLAGS += -I/path/to/apep/include
 LDFLAGS += -L/path/to/apep -lapep
 ```
 
 **CMake:**
+
 ```cmake
 add_subdirectory(apep)
 target_link_libraries(myapp PRIVATE apep)
@@ -111,6 +354,7 @@ The diagnostic functions are thread-safe for rendering. However, i18n global sta
 - Verify file permissions
 
 ### Wrong terminal width detected
+
 ```c
 apep_options_t opt;
 apep_options_default(&opt);

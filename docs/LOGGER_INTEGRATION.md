@@ -1,6 +1,34 @@
 # APEP Logger Integration
 
-Build a logging system on top of APEP.
+Build a full-featured logging system on top of APEP.
+
+APEP is a **diagnostic renderer**, not a logging framework. This guide shows how to build logging frameworks on top of APEP's powerful formatting capabilities.
+
+## Architecture
+
+```
+Your Application
+    ↓
+Logger Wrapper (your code)
+    ↓
+APEP (renders diagnostics)
+    ↓
+Output (console, file, network, etc.)
+```
+
+The logger wrapper handles:
+- Severity filtering
+- Multiple output targets ("sinks")
+- Buffering and batching
+- Timestamp/component tagging
+- Thread safety (optional)
+
+APEP handles:
+- Beautiful formatting
+- Color detection
+- Terminal width adaptation
+- Localization
+- Unicode/ASCII fallback
 
 ## Simple Logger
 
