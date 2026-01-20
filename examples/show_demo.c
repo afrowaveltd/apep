@@ -2,7 +2,11 @@
 #include "../include/apep/apep_helpers.h"
 #include <string.h>
 #include <stdio.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <unistd.h>
+#endif
 
 static int streq(const char *a, const char *b)
 {
@@ -284,7 +288,11 @@ int main(int argc, char **argv)
 
         for (size_t i = 1; i <= 50; i++)
         {
+#ifdef _WIN32
+            Sleep(10); /* 10ms delay */
+#else
             usleep(10000); /* 10ms delay */
+#endif
             apep_progress_update(prog, i);
         }
 

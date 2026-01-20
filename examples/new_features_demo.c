@@ -6,7 +6,11 @@
 #include <apep/apep_helpers.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <unistd.h>
+#endif
 
 void demo_json_output(void)
 {
@@ -58,7 +62,7 @@ void demo_buffering(void)
     apep_buffer_add(buf, APEP_SEV_ERROR, "E003", "type mismatch", "test.c", 12, 10);
     apep_buffer_add(buf, APEP_SEV_NOTE, "N001", "declared here", "test.c", 3, 8);
 
-    printf("Buffer contains %zu diagnostics\n", apep_buffer_count(buf));
+    printf("Buffer contains %lu diagnostics\n", (unsigned long)apep_buffer_count(buf));
 
     printf("\nFlushing buffer (sorted by location):\n");
     apep_buffer_flush(buf, NULL, 1);
@@ -176,7 +180,11 @@ void demo_progress(void)
 
     for (size_t i = 1; i <= 100; i++)
     {
+#ifdef _WIN32
+        Sleep(20); /* 20ms delay */
+#else
         usleep(20000); /* 20ms delay */
+#endif
         apep_progress_update(prog, i);
     }
 

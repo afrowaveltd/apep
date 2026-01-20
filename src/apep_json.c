@@ -8,7 +8,14 @@
 #include <io.h>
 #include <windows.h>
 #define isatty _isatty
+/* fileno is already defined in MinGW's stdio.h */
+#ifndef fileno
 #define fileno _fileno
+#endif
+/* Define this constant if not available in older Windows headers */
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
 #else
 #include <unistd.h>
 #endif

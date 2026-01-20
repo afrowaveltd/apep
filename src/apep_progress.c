@@ -48,9 +48,9 @@ void apep_progress_update(apep_progress_t *prog, size_t current)
         /* Non-TTY: just print occasional updates */
         if (current % (prog->total / 10 + 1) == 0 || current == prog->total)
         {
-            fprintf(prog->out, "[%s] %zu/%zu (%.0f%%)\n",
+            fprintf(prog->out, "[%s] %lu/%lu (%.0f%%)\n",
                     prog->label ? prog->label : "Progress",
-                    current, prog->total,
+                    (unsigned long)current, (unsigned long)prog->total,
                     100.0 * current / prog->total);
         }
         return;
@@ -72,7 +72,7 @@ void apep_progress_update(apep_progress_t *prog, size_t current)
     }
     fputc(']', prog->out);
 
-    fprintf(prog->out, " %zu/%zu (%.0f%%)", current, prog->total,
+    fprintf(prog->out, " %lu/%lu (%.0f%%)", (unsigned long)current, (unsigned long)prog->total,
             100.0 * current / prog->total);
 
     fflush(prog->out);
