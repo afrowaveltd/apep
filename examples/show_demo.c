@@ -1,5 +1,7 @@
 #include "../include/apep/apep.h"
 #include "../include/apep/apep_helpers.h"
+#include "../include/apep/apep_i18n.h"
+#include "common_i18n.h"
 #include <string.h>
 #include <stdio.h>
 #ifdef _WIN32
@@ -15,15 +17,15 @@ static int streq(const char *a, const char *b)
 
 static void usage(void)
 {
-    puts("APEP (Afrowave Pretty Error Print) - Demonstration");
+    puts(_("show_demo_title"));
     puts("");
-    puts("Usage: apep_show_demo [OPTIONS]");
+    puts(_("usage_line"));
     puts("");
-    puts("Options:");
-    puts("  --no-color    Disable colored output");
-    puts("  --ascii       Use ASCII-only characters (no Unicode)");
-    puts("  --plain       Equivalent to --no-color --ascii");
-    puts("  --help, -h    Show this help message");
+    puts(_("options_header"));
+    puts(_("opt_no_color"));
+    puts(_("opt_ascii"));
+    puts(_("opt_plain"));
+    puts(_("opt_help"));
     puts("");
 }
 
@@ -31,13 +33,15 @@ static void print_separator(const char *title)
 {
     printf("\n");
     printf("==================================================\n");
-    printf("  %s\n", title);
+    printf("  %s\n", _(title));
     printf("==================================================\n");
     printf("\n");
 }
 
 int main(int argc, char **argv)
 {
+    demo_i18n_init(argc, argv, "show_demo");
+
     apep_options_t opt = (apep_options_t){0};
 
     for (int i = 1; i < argc; i++)
@@ -54,31 +58,35 @@ int main(int argc, char **argv)
         else if (streq(argv[i], "--help") || streq(argv[i], "-h"))
         {
             usage();
+            apep_i18n_cleanup();
             return 0;
         }
         else
         {
-            fprintf(stderr, "Unknown option: %s\n\n", argv[i]);
+            fprintf(stderr, _("unknown_option"), argv[i]);
+            fprintf(stderr, "\n\n");
             usage();
+            apep_i18n_cleanup();
             return 2;
         }
     }
 
-    printf("APEP v%d.%d.%d - Afrowave Pretty Error Print\n",
+    printf(_("apep_version"), 
            APEP_VERSION_MAJOR, APEP_VERSION_MINOR, APEP_VERSION_PATCH);
+    printf("\n");
 
     /* ================================================== */
-    print_separator("1. LOG MESSAGES - Various severity levels");
+    print_separator("sep_1");
 
-    apep_print_message(&opt, APEP_LVL_TRACE, "BOOT", "initializing subsystems");
-    apep_print_message(&opt, APEP_LVL_DEBUG, "CFG", "loaded config from /etc/app.conf");
-    apep_print_message(&opt, APEP_LVL_INFO, "NET", "listening on 0.0.0.0:8080");
-    apep_print_message(&opt, APEP_LVL_WARN, "DB", "connection pool nearly exhausted (8/10 used)");
-    apep_print_message(&opt, APEP_LVL_ERROR, "AUTH", "invalid credentials for user 'admin'");
-    apep_print_message(&opt, APEP_LVL_CRITICAL, "SYS", "failed to allocate memory - terminating");
+    apep_print_message(&opt, APEP_LVL_TRACE, "BOOT", _("msg_initializing"));
+    apep_print_message(&opt, APEP_LVL_DEBUG, "CFG", _("msg_loaded_config"));
+    apep_print_message(&opt, APEP_LVL_INFO, "NET", _("msg_listening"));
+    apep_print_message(&opt, APEP_LVL_WARN, "DB", _("msg_pool_exhausted"));
+    apep_print_message(&opt, APEP_LVL_ERROR, "AUTH", _("msg_invalid_creds"));
+    apep_print_message(&opt, APEP_LVL_CRITICAL, "SYS", _("msg_alloc_failed"));
 
     /* ================================================== */
-    print_separator("2. SYNTAX ERROR - Single character issue");
+    print_separator("sep_2");
 
     {
         const char *src_text = "(1+)\n";
@@ -86,18 +94,18 @@ int main(int argc, char **argv)
 
         apep_note_t notes[1];
         notes[0].kind = "hint";
-        notes[0].message = "expected expression after '+' operator";
+        notes[0].message = _("hint_expected_expr");
 
         apep_loc_t loc = {1, 4};
 
         apep_print_text_diagnostic(
             &opt, APEP_SEV_ERROR, "E0001",
-            "unexpected token ')'",
+            _("err_unexpected_token"),
             &src, loc, 1, notes, 1);
     }
 
     /* ================================================== */
-    print_separator("3. PARSER ERROR - Multi-line context");
+    print_separator("sep_3");
 
     {
         const char *src_text =
@@ -110,20 +118,20 @@ int main(int argc, char **argv)
 
         apep_note_t notes[2];
         notes[0].kind = "hint";
-        notes[0].message = "JavaScript requires semicolons or newlines";
+        notes[0].message = _("hint_semicolons");
         notes[1].kind = "help";
-        notes[1].message = "add ';' after the expression";
+        notes[1].message = _("help_add_semicolon");
 
         apep_loc_t loc = {2, 23};
 
         apep_print_text_diagnostic(
             &opt, APEP_SEV_ERROR, "E0042",
-            "expected ';' at end of statement",
+            _("err_expected_semicolon"),
             &src, loc, 1, notes, 2);
     }
 
     /* ================================================== */
-    print_separator("4. TYPE ERROR - Warning with suggestion");
+    print_separator("sep_4");
 
     {
         const char *src_text =
@@ -135,18 +143,18 @@ int main(int argc, char **argv)
 
         apep_note_t notes[1];
         notes[0].kind = "suggestion";
-        notes[0].message = "consider using f-strings: f'Hello, {name}'";
+        notes[0].message = _("suggestion_fstrings");
 
         apep_loc_t loc = {2, 15};
 
         apep_print_text_diagnostic(
             &opt, APEP_SEV_WARN, "W0102",
-            "string concatenation in loop may be inefficient",
+            _("warn_string_concat"),
             &src, loc, 15, notes, 1);
     }
 
     /* ================================================== */
-    print_separator("5. VALIDATION NOTE - Informational");
+    print_separator("sep_5");
 
     {
         const char *src_text =
@@ -159,13 +167,13 @@ int main(int argc, char **argv)
 
         apep_note_t notes[1];
         notes[0].kind = "info";
-        notes[0].message = "this field is optional but recommended";
+        notes[0].message = _("info_optional_field");
 
         apep_loc_t loc = {3, 3};
 
         apep_print_text_diagnostic(
             &opt, APEP_SEV_NOTE, NULL,
-            "missing 'description' field",
+            _("note_missing_description"),
             &src, loc, 0, notes, 1);
     }
 
